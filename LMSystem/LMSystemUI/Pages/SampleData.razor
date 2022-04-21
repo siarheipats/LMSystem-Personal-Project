@@ -1,0 +1,42 @@
+﻿@page "/SampleData"
+@inject IMongoUserData userData
+
+<h3>Sample Data</h3>
+
+@if (userCreated)
+{
+    <h4>user created</h4>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="CreateUser">Create User</button>
+}
+@code {
+
+    private bool userCreated = false;
+
+    private async Task CreateUser()
+    {
+        var users = await userData.GetUsersAsync();
+
+        if (users?.Count > 0)
+        {
+            return;
+        }
+
+        UserModel user = new()
+        {
+            Email = "admin@hvac.com",
+            Password = "12345",
+            FirstName = "Corey",
+            LastName = "Banks",
+            DataAccessLvl = "1"
+        };
+
+        await userData.CreateUser(user);
+
+        userCreated = true;
+    }
+
+}
+
