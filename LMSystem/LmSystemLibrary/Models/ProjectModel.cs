@@ -10,7 +10,7 @@
         public ClientModel ProjectClient { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public string ProjectNotes { get; set; }
-        public string CreatedBy { get; set; }
+        public UserModel CreatedBy { get; set; }
         public string ProjectStatus { get; set; }
         public List<InvoiceModel> Invoices { get; set; }
     }

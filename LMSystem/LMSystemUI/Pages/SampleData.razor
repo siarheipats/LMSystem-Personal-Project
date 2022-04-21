@@ -1,5 +1,9 @@
 ﻿@page "/SampleData"
 @inject IMongoUserData userData
+@inject IMongoClientData clientData
+@inject IMongoItemData itemData
+@inject IMongoInvoiceData invoiceData
+@inject IMongoProjectData projectData
 
 <h3>Sample Data</h3>
 
@@ -11,6 +15,9 @@ else
 {
     <button class="btn btn-primary" @onclick="CreateUser">Create User</button>
 }
+
+<button class="btn btn-primary" @onclick="CreateData">Create Data</button>
+
 @code {
 
     private bool userCreated = false;
@@ -38,5 +45,86 @@ else
         userCreated = true;
     }
 
+    private async Task CreateData()
+    {
+        ClientModel client = new()
+        {
+            FirstName = "Nick",
+            LastName = "Blake",
+            ClientAddress = "96 Granite Ave, Cache, OK 73527",
+            ClientPhoneNumber = "646-537-4747",
+            ClientEMail = "nick.blake@gmail.com"
+        };
+
+        await clientData.CreateClient(client);
+
+        ItemModel item1 = new()
+        {
+            ItemName = "Thermostat Nest 1st generation",
+            ItemDescription = "Smart Thermostat by Google.",
+            Price = "145.50",
+            QuantityInStock = 25
+        };
+
+        ItemModel item2 = new()
+        {
+            ItemName = "Low Voltage Wires",
+            ItemDescription = "Low Voltage copper wires. 50 ft/pack.",
+            Price = "15.50",
+            QuantityInStock = 50
+        };
+
+        ItemModel item3 = new()
+        {
+            ItemName = "AC Furnace",
+            ItemDescription = "Refurbished AC furnace. 5 year company warranty",
+            Price = "1455.50",
+            QuantityInStock = 1
+        };
+
+        await itemData.CreateItem(item1);
+        await itemData.CreateItem(item2);
+        await itemData.CreateItem(item3);
+
+        List<ItemModel> items = new List<ItemModel>();
+        items.Add(item1);
+        items.Add(item2);
+        items.Add(item3);
+
+        UserModel user = new()
+        {
+            Email = "admin@hvac.com",
+            Password = "12345",
+            FirstName = "Corey",
+            LastName = "Banks",
+            DataAccessLvl = "1"
+        };
+
+        InvoiceModel invoice = new()
+        {
+            InvoiceTitle = "Thermostat Replacement",
+            InvoiceNumber = "001AC22",
+            InvoiceStatus = "Awating Approval",
+            Items = items,
+            Total = "7800",
+            CreatedBy = user
+        };
+
+        await invoiceData.CreateInvoice(invoice);
+
+        List<InvoiceModel> invoices = new List<InvoiceModel>();
+        invoices.Add(invoice);
+
+        ProjectModel project = new()
+        {
+            ProjectTitle = "Blake's Home Renovation",
+            ProjectDescription = "Full AC replacement",
+            ProjectClient = client,
+            ProjectNotes = "No Notes",
+            CreatedBy = user,
+            Invoices = invoices
+        };
+
+    }
 }
 
