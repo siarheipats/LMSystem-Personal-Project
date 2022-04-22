@@ -49,11 +49,11 @@ else
     {
         ClientModel client = new()
         {
-            FirstName = "Nick",
-            LastName = "Blake",
-            ClientAddress = "96 Granite Ave, Cache, OK 73527",
-            ClientPhoneNumber = "646-537-4747",
-            ClientEMail = "nick.blake@gmail.com"
+            FirstName = "Shanon",
+            LastName = "Reece",
+            ClientAddress = "1455 Carmel Ave, Cache, OK 73527",
+            ClientPhoneNumber = "569-789-9999",
+            ClientEMail = "shanon.reece@yahoo.com"
         };
 
         await clientData.CreateClient(client);
@@ -117,14 +117,16 @@ else
 
         ProjectModel project = new()
         {
-            ProjectTitle = "Blake's Home Renovation",
-            ProjectDescription = "Full AC replacement",
+            ProjectTitle = "Shanon's Home Renovation",
+            ProjectDescription = "Thermostat replacement",
             ProjectClient = client,
             ProjectNotes = "No Notes",
             CreatedBy = user,
-            Invoices = invoices
+            Invoices = invoices,
+            ProjectStatus = "Completed"
         };
 
+        await projectData.CreateProject(project);
     }
 }
 
