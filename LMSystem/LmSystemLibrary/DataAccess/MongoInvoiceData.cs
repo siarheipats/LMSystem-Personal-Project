@@ -16,17 +16,8 @@ namespace LmSystemLibrary.DataAccess
 
         public async Task<List<InvoiceModel>> GetAllInvoices()
         {
-            var output = _cache.Get<List<InvoiceModel>>(cacheName);
-
-            if (output is null)
-            {
-                var result = await _invoices.FindAsync(_ => true);
-                output = result.ToList();
-
-                _cache.Set(cacheName, output, TimeSpan.FromDays(1));
-            }
-
-            return output;
+            var result = await _invoices.FindAsync(_ => true);
+            return result.ToList();
         }
 
         public async Task<InvoiceModel> GetInvoiceAsync(string id)

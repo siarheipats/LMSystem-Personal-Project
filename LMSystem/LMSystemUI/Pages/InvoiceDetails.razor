@@ -4,7 +4,7 @@
 @inject NavigationManager navManager
 
 <h3>Invoice Details:</h3>
-
+<br />
 @if (invoice is not null)
 {
     <div><h3>Title: @invoice.InvoiceTitle</h3></div>
@@ -14,8 +14,11 @@
     <div>Created: @invoice.DateCreated.ToString("MM.dd.yyyy")</div>
     <div>Created By: @invoice.CreatedBy.FirstName @invoice.CreatedBy.LastName</div>
     <br />
-    <div>Items:</div>
-    @if (invoice.Items.Count > 0)
+    <div><h3>Items:</h3></div>
+    <br/>
+    <button @onclick="(() => AddItemsToInvoice(invoice.Id))">Add Items</button>
+    <br />
+    @if (invoice.Items is not null)
     {
         <br />
         <Virtualize Items="@invoice.Items" Context="s" OverscanCount="5">
@@ -26,8 +29,8 @@
         <br />
         <div>Total: $@invoice.Total</div>
     }
-
-    @if (invoice.Items.Count == 0)
+    <br />
+    @if (invoice.Items is null)
      {
         <div> No items in the invoice</div>
      }
@@ -41,6 +44,11 @@
     protected override async Task OnInitializedAsync()
     {
         invoice = await invoiceData.GetInvoiceAsync(Id);
+    }
+
+    private void AddItemsToInvoice(string id)
+    {
+        navManager.NavigateTo($"/additemstoinvoice/{id}");
     }
 }
 

@@ -4,23 +4,189 @@
 @inject NavigationManager navManager
 
 <h3>Client Details:</h3>
-
-@if(client is not null)
- {
-    <div>Name: @client.FirstName @client.LastName</div>
-    <div>Address: @client.ClientAddress</div>
-    <div>Phone: @client.ClientPhoneNumber</div>
-    <div>Email: @client.ClientEMail</div>
- }
+<br />
+@if (client is not null)
+{
+    @if (currentFirstName == client.Id || currentLastName == client.Id)
+    {
+        <EditForm Model="@editedFirstName">
+            <InputText @bind-Value="editedFirstName" />
+        </EditForm>
+        <EditForm Model="@editedLastName" OnSubmit="(() => SaveName(client))">
+            <InputText @bind-Value="editedLastName" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentFirstName = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+    }
+    else
+    {
+        <div>
+            Name: @client.FirstName @client.LastName <span class="oi oi-pencil" @onclick="(() => EditName(client))" />
+        </div>
+    }
+    <br />
+    @if(currentAddress == client.Id)
+     {
+        <EditForm Model="@editedAddress" OnSubmit="(() => SaveAddress(client))">
+            <InputTextArea @bind-Value="editedAddress" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentAddress = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+     }
+    else
+    {
+        <div>
+            Address: @client.ClientAddress <span class="oi oi-pencil" @onclick="(() => EditAddress(client))" />
+        </div>
+    }
+    <br />
+    @if(currentPhone == client.Id)
+     {
+        <EditForm Model="@editedPhone" OnSubmit="(() => SavePhoneNumber(client))">
+            <InputTextArea @bind-Value="editedPhone" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentPhone = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+     }
+    else
+    {
+        <div>
+            Phone: @client.ClientPhoneNumber <span class="oi oi-pencil" @onclick="(() => EditPhoneNumber(client))" />
+        </div>
+    }
+    <br />
+    @if(currentEmail == client.Id)
+     {
+        <EditForm Model="@editedEmail" OnSubmit="(() => SaveEmail(client))">
+            <InputTextArea @bind-Value="editedEmail" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentEmail = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+     }
+    else
+    {
+        <div>
+            Email: @client.ClientEMail <span class="oi oi-pencil" @onclick="(() => EditEmail(client))" />
+        </div>
+    }
+}
 
 @code {
     [Parameter]
     public string Id { get; set; }
     private ClientModel client;
 
+    private ClientModel editingClientModel;
+    private string currentFirstName = "";
+    private string editedFirstName = "";
+    private string currentLastName = "";
+    private string editedLastName = "";
+    private string currentAddress = "";
+    private string editedAddress = "";
+    private string currentPhone = "";
+    private string editedPhone = "";
+    private string currentEmail = "";
+    private string editedEmail = "";
+
+
     protected override async Task OnInitializedAsync()
     {
         client = await clientData.GeClientAsync(Id);
+    }
+
+    private void EditName(ClientModel client)
+    {
+        editingClientModel = client;
+        editedFirstName = client.FirstName;
+        editedLastName = client.LastName;
+        currentFirstName = client.Id;
+        currentLastName = client.Id;
+
+        currentAddress = "";
+        currentPhone = "";
+        currentEmail = "";
+    }
+
+    private void EditAddress(ClientModel client)
+    {
+        editingClientModel = client;
+        editedAddress = client.ClientAddress;
+        currentAddress = client.Id;
+
+        currentFirstName = "";
+        currentLastName = "";
+        currentPhone = "";
+        currentEmail = "";
+    }
+
+    private void EditPhoneNumber(ClientModel client)
+    {
+        editingClientModel = client;
+        editedPhone = client.ClientPhoneNumber;
+        currentPhone = client.Id;
+
+        currentAddress = "";
+        currentFirstName = "";
+        currentLastName = "";
+        currentEmail = "";
+    }
+
+    private void EditEmail(ClientModel client)
+    {
+        editingClientModel = client;
+        editedEmail = client.ClientEMail;
+        currentEmail = client.Id;
+
+        currentAddress = "";
+        currentFirstName = "";
+        currentLastName = "";
+        currentPhone = "";
+    }
+
+    private async Task SaveName(ClientModel client)
+    {
+        currentFirstName = String.Empty;
+        currentLastName = String.Empty;
+        client.FirstName = editedFirstName;
+        client.LastName = editedLastName;
+        await clientData.UpdateClient(client);
+    }
+
+    private async Task SaveAddress(ClientModel client)
+    {
+        currentAddress = String.Empty;
+        client.ClientAddress = editedAddress;
+        await clientData.UpdateClient(client);
+    }
+
+    private async Task SavePhoneNumber(ClientModel client)
+    {
+        currentPhone = String.Empty;
+        client.ClientPhoneNumber = editedPhone;
+        await clientData.UpdateClient(client);
+    }
+
+    private async Task SaveEmail(ClientModel client)
+    {
+        currentEmail = String.Empty;
+        client.ClientEMail = editedEmail;
+        await clientData.UpdateClient(client);
     }
 }
 

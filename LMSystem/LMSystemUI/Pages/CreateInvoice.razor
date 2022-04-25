@@ -1,0 +1,67 @@
+﻿@page "/createinvoice"
+
+@using LMSystemUI.Models
+@inject IMongoInvoiceData invoiceData
+@inject IMongoUserData userData
+@inject NavigationManager navManager
+
+<h3>Create New Invoice:</h3>
+<br />
+<div>
+    <div>
+        <div>
+            <EditForm Model="invoice" OnValidSubmit="CreateNewInvoice">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div>
+                    <label for="invoice-title-text">
+                        Title: <InputText id="invoice-title-text" @bind-Value="invoice.InvoiceTitle" />
+                    </label>
+                </div>
+                <div>
+                    <label for="invoice-number-text">Number: </label>
+                    <InputText id="invoice-number-text" @bind-Value="invoice.InvoiceNumber" />
+                </div>
+                <div>
+                    <label for="invoice-status-text">Status: </label>
+                    <InputText id="invoice-status-text" @bind-Value="invoice.InvoiceStatus" />
+                </div>
+                <br />
+                <div>
+                    <button type="submit">Create New Invoice</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateInvoiceModel invoice = new();
+    private UserModel currentUser = new();
+    private InvoiceModel createdInvoice = new();
+
+    private async Task CreateNewInvoice()
+    {
+        InvoiceModel s = new();
+
+        //TODO: Replace with User lookup once login implemented
+        currentUser = await userData.GeUserAsync("6261c24911695f79f40683c3");
+
+        s.InvoiceTitle = invoice.InvoiceTitle;
+        s.InvoiceNumber = invoice.InvoiceNumber;
+        s.Items = new();
+        s.InvoiceStatus = invoice.InvoiceStatus;
+        s.CreatedBy = currentUser;
+        s.Total = "0";
+
+        await invoiceData.CreateInvoice(s);
+        invoice = new();
+        ClosePage();
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/invoices");
+    }
+}
+
