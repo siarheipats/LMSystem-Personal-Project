@@ -36,6 +36,12 @@ namespace LmSystemLibrary.DataAccess
             return results.FirstOrDefault();
         }
 
+        public async Task<List<ProjectModel>> GetCurrentPorjectsAsync()
+        {
+            var results = await _projects.FindAsync(u => u.ProjectStatus == "Current");
+            return results.ToList();
+        }
+
         public Task CreateProject(ProjectModel project)
         {
             return _projects.InsertOneAsync(project);

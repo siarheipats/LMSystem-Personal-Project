@@ -17,17 +17,9 @@ namespace LmSystemLibrary.DataAccess
 
         public async Task<List<UserModel>> GetUsersAsync()
         {
-            var output = _cache.Get<List<UserModel>>(cacheName);
-
-            if (output is null)
-            {
-                var results = await _users.FindAsync(_ => true);
-                output = results.ToList();
-
-                _cache.Set(cacheName, output, TimeSpan.FromDays(1));
-            }
-
-            return output;
+            var results = await _users.FindAsync(_ => true);
+            
+            return results.ToList();
         }
 
         public async Task<UserModel> GeUserAsync(string id)

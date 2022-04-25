@@ -1,0 +1,176 @@
+﻿@page "/item/{id}"
+
+@inject IMongoItemData itemData
+
+<h3>Item Details:</h3>
+<br />
+@if (item is not null)
+{
+    @if (currentEditingName == item.Id)
+    {
+        <EditForm Model="@editedName" OnSubmit="(() => SaveName(item))">
+            <InputText @bind-Value="editedName" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentEditingName = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+    }
+    else
+    {
+        <div>
+            Name: @item.ItemName <span class="oi oi-pencil" @onclick="(() => EditName(item))" />
+        </div>
+    }
+    <br />
+    @if (currentEditingDescription == item.Id)
+    {
+        <EditForm Model="@editedDescription" OnSubmit="(() => SaveDescription(item))">
+            <InputTextArea @bind-Value="editedDescription" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentEditingDescription = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+    }
+    else
+    {
+        <div>
+            Description: <br /> @item.ItemDescription <span class="oi oi-pencil" @onclick="(() => EditDescription(item))" />
+        </div>
+
+    }
+    <br />
+    @if (currentEditingPrice == item.Id)
+    {
+        <EditForm Model="@editedPrice" OnSubmit="(() => SavePrice(item))">
+            <InputTextArea @bind-Value="editedPrice" />
+            <button type="submit">
+                <span class="oi oi-check"></span>
+            </button>
+            <button @onclick="(() => currentEditingPrice = String.Empty)">
+                <span class="oi oi-x"></span>
+            </button>
+        </EditForm>
+    }
+    else
+    {
+        <div>
+            Price: @item.Price <span class="oi oi-pencil" @onclick="(() => EditPrice(item))" />
+        </div>
+    }
+    <br />
+    @if (currentQuantityInStock == item.Id)
+    {
+            <EditForm Model="@editedQuantityInStock" OnSubmit="(() => SaveQuantityInStock(item))">
+                <InputNumber @bind-Value="editedQuantityInStock"/>
+                <button type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button @onclick="(() => currentQuantityInStock = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+    }
+    else
+    {
+        <div>
+            Quantity in Stock: @item.QuantityInStock <span class="oi oi-pencil" @onclick="(() => EditQuantityInStock(item))" />
+        </div>
+    }
+
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private ItemModel item;
+
+    private ItemModel editingModel;
+    private string currentEditingName = "";
+    private string editedName = "";
+    private string currentEditingDescription = "";
+    private string editedDescription = "";
+    private string currentEditingPrice = "";
+    private string editedPrice = "";
+    private string currentQuantityInStock = "";
+    private int editedQuantityInStock = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await itemData.GetItemAsync(Id);
+    }
+
+    private void EditName(ItemModel item)
+    {
+        editingModel = item;
+        editedName = item.ItemName;
+        currentEditingName = item.Id;
+        currentEditingDescription = "";
+        currentEditingPrice = "";
+        currentQuantityInStock = "";
+    }
+
+    private void EditDescription(ItemModel item)
+    {
+        editingModel = item;
+        editedDescription = item.ItemDescription;
+        currentEditingDescription = item.Id;
+        currentEditingName = "";
+        currentEditingPrice = "";
+        currentQuantityInStock = "";
+    }
+
+    private void EditPrice(ItemModel item)
+    {
+        editingModel = item;
+        editedPrice = item.Price;
+        currentEditingDescription = "";
+        currentEditingName = "";
+        currentEditingPrice = item.Id;
+        currentQuantityInStock = "";
+    }
+
+    private void EditQuantityInStock(ItemModel item)
+    {
+        editingModel = item;
+        editedQuantityInStock = item.QuantityInStock;
+        currentEditingDescription = "";
+        currentEditingName = "";
+        currentEditingPrice = "";
+        currentQuantityInStock = item.Id;
+    }
+
+    private async Task SaveName(ItemModel item)
+    {
+        currentEditingName = String.Empty;
+        item.ItemName = editedName;
+        await itemData.UpdateItem(item);
+    }
+
+    private async Task SaveDescription(ItemModel item)
+    {
+        currentEditingDescription = String.Empty;
+        item.ItemDescription = editedDescription;
+        await itemData.UpdateItem(item);
+    }
+
+    private async Task SavePrice(ItemModel item)
+    {
+        currentEditingPrice = String.Empty;
+        item.Price = editedPrice;
+        await itemData.UpdateItem(item);
+    }
+
+    private async Task SaveQuantityInStock(ItemModel item)
+    {
+        currentQuantityInStock = "";
+        item.QuantityInStock = editedQuantityInStock;
+        await itemData.UpdateItem(item);
+    }
+}
+

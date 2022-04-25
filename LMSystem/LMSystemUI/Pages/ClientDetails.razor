@@ -1,0 +1,26 @@
+﻿@page "/client/{id}"
+
+@inject IMongoClientData clientData
+@inject NavigationManager navManager
+
+<h3>Client Details:</h3>
+
+@if(client is not null)
+ {
+    <div>Name: @client.FirstName @client.LastName</div>
+    <div>Address: @client.ClientAddress</div>
+    <div>Phone: @client.ClientPhoneNumber</div>
+    <div>Email: @client.ClientEMail</div>
+ }
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private ClientModel client;
+
+    protected override async Task OnInitializedAsync()
+    {
+        client = await clientData.GeClientAsync(Id);
+    }
+}
+

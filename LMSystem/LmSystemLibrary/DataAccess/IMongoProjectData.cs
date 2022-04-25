@@ -7,5 +7,6 @@ namespace LmSystemLibrary.DataAccess
         Task<ProjectModel> GetPorjectAsync(string id);
         Task<List<ProjectModel>> GetProjectsAsync();
         Task UpdateClient(ProjectModel project);
+        Task<List<ProjectModel>> GetCurrentPorjectsAsync();
     }
 }

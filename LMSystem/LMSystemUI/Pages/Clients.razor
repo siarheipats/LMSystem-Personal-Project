@@ -1,0 +1,103 @@
+﻿@page "/clients"
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IMongoClientData clientData
+@inject NavigationManager navManager
+@inject ProtectedSessionStorage sessionStorage
+
+
+<h3>Clients:</h3>
+<br />
+<div>
+    Search:
+    <input type="text" placeholder="Search"
+           aria-label="Search box"
+           @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+</div>
+<br />
+<div>
+    <button @onclick="CreateNewItem">Create New Client</button>
+</div>
+<br />
+<div>
+    <div>
+        @if(clients is not null)
+            {
+                <Virtualize Items="@clients" Context="s" OverscanCount="15">
+                    <form>
+                        <fieldset>
+                            <div @onclick="(() => OpenClientDetails(s))">Name @s.LastName, @s.FirstName</div>
+                            <div>Cell: @s.ClientPhoneNumber</div>
+                        </fieldset>
+                    </form>
+                    <br />
+                </Virtualize>
+            }
+    </div>
+</div>
+
+
+@code {
+    private List<ClientModel> clients;
+    private string searchText = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        clients = await clientData.GetClientsAsync();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await LoadFilterState();
+            await FilterClients();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadFilterState()
+    {
+        searchText = "";
+
+    }
+
+    private async Task FilterClients()
+    {
+        var output = await clientData.GetClientsAsync();
+        if (string.IsNullOrWhiteSpace(searchText) == false)
+        {
+            output = output.Where(s => s.FirstName.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.LastName.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientPhoneNumber.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientEMail.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientAddress.Contains(searchText, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+        clients = output;
+
+        await SaveFilterState();
+    }
+
+    private async Task SaveFilterState()
+    {
+        await sessionStorage.SetAsync(nameof(searchText), searchText);
+    }
+
+    private async Task OnSearchInput(string searchInput)
+    {
+        searchText = searchInput;
+        await FilterClients();
+    }
+
+    private void OpenClientDetails(ClientModel client)
+    {
+        navManager.NavigateTo($"/client/{client.Id}");
+    }
+
+    private void CreateNewItem()
+    {
+        navManager.NavigateTo("/createclient");
+    }
+}
+

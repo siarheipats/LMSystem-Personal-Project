@@ -1,0 +1,99 @@
+﻿@page "/invoices"
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IMongoInvoiceData invoiceData
+@inject ProtectedSessionStorage sessionStorage
+@inject NavigationManager navManager
+
+<h3>Invoices:</h3>
+
+<div>
+    Search:
+    <input type="text" placeholder="Search"
+           aria-label="Search box"
+           @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+</div>
+<br />
+<div>
+    <button @onclick="CreateNewInvocie">New Invoice</button>
+</div>
+<br />
+<div>
+    <div>
+        @if(invoices is not null)
+         {
+            <Virtualize Items="invoices" Context="s" OverscanCount="10">
+                <form>
+                    <fieldset>
+                        <div @onclick="(() => OpenInvoiceDetails(s))">Title: @s.InvoiceTitle</div>
+                        <div>Invoice Number: @s.InvoiceNumber</div>
+                        <div>Status: @s.InvoiceStatus</div>
+                    </fieldset>
+                </form>
+                <br />
+            </Virtualize>
+         }    
+    </div>
+</div>
+
+@code {
+    private List<InvoiceModel> invoices;
+    private string searchText = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        invoices = await invoiceData.GetAllInvoices();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await LoadFilterState();
+            await FilterInvoices();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadFilterState()
+    {
+        searchText = "";
+
+    }
+
+    private async Task FilterInvoices()
+    {
+        var output = await invoiceData.GetAllInvoices();
+        if (string.IsNullOrWhiteSpace(searchText) == false)
+        {
+            output = output.Where(s => s.InvoiceTitle.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+            s.InvoiceNumber.Contains(searchText, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+        invoices = output;
+
+        await SaveFilterState();
+    }
+
+    private async Task SaveFilterState()
+    {
+        await sessionStorage.SetAsync(nameof(searchText), searchText);
+    }
+
+    private async Task OnSearchInput(string searchInput)
+    {
+        searchText = searchInput;
+        await FilterInvoices();
+    }
+
+    private void OpenInvoiceDetails(InvoiceModel invoice)
+    {
+        navManager.NavigateTo($"/invoice/{invoice.Id}");
+    }
+
+    private void CreateNewInvocie()
+    {
+        navManager.NavigateTo("/createinvoice");
+    }
+}
+

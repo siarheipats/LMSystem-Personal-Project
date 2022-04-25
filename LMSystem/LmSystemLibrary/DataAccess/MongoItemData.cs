@@ -17,17 +17,8 @@ namespace LmSystemLibrary.DataAccess
 
         public async Task<List<ItemModel>> GetItemsAsync()
         {
-            var output = _cache.Get<List<ItemModel>>(cacheName);
-
-            if (output is null)
-            {
-                var results = await _items.FindAsync(_ => true);
-                output = results.ToList();
-
-                _cache.Set(cacheName, output, TimeSpan.FromDays(1));
-            }
-
-            return output;
+            var results = await _items.FindAsync(_ => true);
+            return results.ToList();
         }
 
         public async Task<ItemModel> GetItemAsync(string id)

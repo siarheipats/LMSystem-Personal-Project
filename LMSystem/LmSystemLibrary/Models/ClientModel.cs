@@ -1,5 +1,4 @@
-﻿
-namespace LmSystemLibrary.Models
+﻿namespace LmSystemLibrary.Models
 {
 	public class ClientModel
 	{

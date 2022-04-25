@@ -1,0 +1,63 @@
+﻿@page "/createitem"
+
+@using LMSystemUI.Models 
+
+@inject IMongoItemData itemData
+@inject NavigationManager navManager
+
+<h3>New Item:</h3>
+<div>
+    <div>
+        <div>
+            <EditForm Model="item" OnValidSubmit="CreateNewItem">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div>
+                    <label for="item-name-text">Name: </label>
+                    <InputText id="item-name-text" @bind-Value="item.ItemName" />
+                </div>
+                <div>
+                    <label for="item-description-text">Description: </label>
+                    <br />
+                    <InputTextArea id="item-description-text" @bind-Value="item.ItemDescription" />
+                </div>
+                <div>
+                    <label for="item-price-text">Price: </label>
+                    <InputText id="item-price-text" @bind-Value="item.Price" />
+                </div>
+                <div>
+                    <label for="item-quantity-text">Quantity: </label>
+                    <InputNumber id="item-quantity-text" @bind-Value="item.QuantityInStock" />
+                </div>
+                <br />
+                <div>
+                    <button type="submit">Add To Inventory</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateItemModel item = new();
+
+    private async Task CreateNewItem()
+    {
+        ItemModel s = new();
+        s.ItemName = item.ItemName;
+        s.ItemDescription = item.ItemDescription;
+        s.Price = item.Price;
+        s.QuantityInStock = item.QuantityInStock;
+
+        await itemData.CreateItem(s);
+        item = new();
+        ClosePage();
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/items");
+    }
+}
+
+

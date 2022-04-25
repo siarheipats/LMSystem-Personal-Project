@@ -1,0 +1,67 @@
+﻿@page "/createclient"
+
+@using LMSystemUI.Models
+
+@inject IMongoClientData clientData
+@inject NavigationManager navManager
+
+<h3>New Client:</h3>
+<div>
+    <div>
+        <div>
+            <EditForm Model="client" OnValidSubmit="CreateNewClient">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                        <div>
+                            <label for="client-first">First Name:</label>
+                            <InputText id="client-first" @bind-Value="client.FirstName" />
+                        </div>
+                        <div>
+                            <label for="client-last">Last Name:</label>
+                            <InputText id="client-last" @bind-Value="client.LastName" />
+                        </div>
+                        <div>
+                            <label for="client-address">Address:</label>
+                            <br />
+                            <InputTextArea id="client-address" @bind-Value="client.ClientAddress" />
+                        </div>
+                        <div>
+                            <label for="client-phone">Phone:</label>
+                            <InputText id="client-phone" @bind-Value="client.ClientPhoneNumber" />
+                        </div>
+                        <div>
+                            <label for="client-email">Email:</label>
+                            <InputText id="client-email" @bind-Value="client.ClientEMail" />
+                        </div>
+                        <br />
+                        <div>
+                            <button type="submit">Create New Client</button>
+                        </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateClientModel client = new();
+
+    private async Task CreateNewClient()
+    {
+        ClientModel s = new();
+        s.FirstName = client.FirstName;
+        s.LastName = client.LastName;
+        s.ClientAddress = client.ClientAddress;
+        s.ClientPhoneNumber = client.ClientPhoneNumber;
+        s.ClientEMail = client.ClientEMail;
+
+        await clientData.CreateClient(s);
+        client = new();
+        ClosePage();
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/clients");
+    }
+}
+

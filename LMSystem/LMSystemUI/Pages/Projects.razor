@@ -1,50 +1,43 @@
-﻿@page "/"
+﻿@page "/projects"
 
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject IMongoProjectData projectData
 @inject NavigationManager navManager
 @inject ProtectedSessionStorage sessionStorage
-@inject IMongoClientData clientData
-@inject IMongoUserData userData
 
-<h1>Home</h1>
-<br />
-<h3>You have 0 notifications.</h3>
-<br />
-<div>Search: <input type="text" placeholder="Search"
-       aria-label="Search box"
-       @oninput="((txt) => OnSearchInput((string)txt.Value))" /></div>
-<br />
+<h3>All Projects:</h3>
 <div>
-     <h3>Current Projects:</h3>
+    Search: <input type="text" placeholder="Search"
+                   aria-label="Search box"
+                   @oninput="((txt) => OnSearchInput((string)txt.Value))" />
 </div>
 <br />
 <div>
-    <div>Order By:   <button @onclick="(() => OrderByNew(true))">New</button>   <button @onclick="(() => OrderByNew(false))">Alphabetical Order</button> </div>
+    <button>New Project</button>
 </div>
 <br />
 <div>
     <div>
-        @if(projects is not null)
-            {
-                <Virtualize Items="@projects" Context="s" OverscanCount="5">
-                    <form>
-                        <fieldset>
-                            <div @onclick="(() => OpenDetails(s))">Title: @s.ProjectTitle</div>
-                            <div @onclick="(() => OpenClientDetails(s.ProjectClient))">
-                                Client Name: @s.ProjectClient.FirstName @s.ProjectClient.LastName</div>
-                            <div>Status: @s.ProjectStatus</div>
-                        </fieldset>
-                    </form>
-                    <br />
-                </Virtualize>
-            }
+        @if (projects is not null)
+        {
+            <Virtualize Items="@projects" Context="s" OverscanCount="5">
+                <form>
+                    <fieldset>
+                        <div @onclick="(() => OpenDetails(s))">Title: @s.ProjectTitle</div>
+                        <div @onclick="(() => OpenClientDetails(s.ProjectClient))">
+                            Client Name: @s.ProjectClient.FirstName @s.ProjectClient.LastName
+                        </div>
+                        <div>Status: @s.ProjectStatus</div>
+                    </fieldset>
+                </form>
+                <br />
+            </Virtualize>
+        }
     </div>
 </div>
 
 @code {
     private List<ProjectModel> projects;
-    bool isSortedByNew = true;
     private string searchText = "";
 
     protected async override Task OnInitializedAsync()
@@ -68,14 +61,11 @@
         var stringResults = await sessionStorage.GetAsync<string>(nameof(searchText));
         searchText = stringResults.Success ? stringResults.Value : "";
 
-        var boolResults = await sessionStorage.GetAsync<bool>(nameof(isSortedByNew));
-        isSortedByNew = boolResults.Success ? boolResults.Value : true;
     }
 
     private async Task FilterProjects()
     {
-        var output = await projectData.GetCurrentPorjectsAsync();
-
+        var output = await projectData.GetProjectsAsync();
         if (string.IsNullOrWhiteSpace(searchText) == false)
         {
             output = output.Where(s => s.ProjectDescription.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
@@ -86,15 +76,6 @@
             ).ToList();
         }
 
-        if (isSortedByNew)
-        {
-            output = output.OrderByDescending(s => s.DateCreated).ToList();
-        }
-        else
-        {
-            output = output.OrderByDescending(s => s.ProjectTitle).ToList();
-        }
-
         projects = output;
 
         await SaveFilterState();
@@ -103,13 +84,6 @@
     private async Task SaveFilterState()
     {
         await sessionStorage.SetAsync(nameof(searchText), searchText);
-        await sessionStorage.SetAsync(nameof(isSortedByNew), isSortedByNew);
-    }
-
-    private async Task OrderByNew(bool isNew)
-    {
-        isSortedByNew = isNew;
-        await FilterProjects();
     }
 
     private async Task OnSearchInput(string searchInput)
@@ -128,3 +102,4 @@
         navManager.NavigateTo($"Client/{client.Id}");
     }
 }
+

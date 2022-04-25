@@ -1,0 +1,46 @@
+﻿@page "/invoice/{id}"
+
+@inject IMongoInvoiceData invoiceData
+@inject NavigationManager navManager
+
+<h3>Invoice Details:</h3>
+
+@if (invoice is not null)
+{
+    <div><h3>Title: @invoice.InvoiceTitle</h3></div>
+    <br />
+    <div>Invoice #: @invoice.InvoiceNumber</div>
+    <div>Status: @invoice.InvoiceStatus</div>
+    <div>Created: @invoice.DateCreated.ToString("MM.dd.yyyy")</div>
+    <div>Created By: @invoice.CreatedBy.FirstName @invoice.CreatedBy.LastName</div>
+    <br />
+    <div>Items:</div>
+    @if (invoice.Items.Count > 0)
+    {
+        <br />
+        <Virtualize Items="@invoice.Items" Context="s" OverscanCount="5">
+            <div>Name: @s.ItemName</div>
+            <div>Price: @s.Price</div>
+            <br />
+        </Virtualize>
+        <br />
+        <div>Total: $@invoice.Total</div>
+    }
+
+    @if (invoice.Items.Count == 0)
+     {
+        <div> No items in the invoice</div>
+     }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private InvoiceModel invoice;
+
+    protected override async Task OnInitializedAsync()
+    {
+        invoice = await invoiceData.GetInvoiceAsync(Id);
+    }
+}
+

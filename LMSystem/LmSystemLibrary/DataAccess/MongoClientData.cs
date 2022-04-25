@@ -17,17 +17,8 @@ namespace LmSystemLibrary.DataAccess
 
         public async Task<List<ClientModel>> GetClientsAsync()
         {
-            var output = _cache.Get<List<ClientModel>>(cacheName);
-
-            if (output is null)
-            {
-                var results = await _clients.FindAsync(_ => true);
-                output = results.ToList();
-
-                _cache.Set(cacheName, output, TimeSpan.FromDays(1));
-            }
-
-            return output;
+            var results = await _clients.FindAsync(_ => true);
+            return results.ToList();
         }
 
         public async Task<ClientModel> GeClientAsync(string id)

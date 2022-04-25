@@ -1,0 +1,47 @@
+﻿@page "/project/{id}"
+
+@inject IMongoProjectData projectData
+@inject NavigationManager navManager
+@inject IMongoInvoiceData invoiceData
+
+<div>
+    @if (project is not null)
+    {
+        <div><h2>Title: @project.ProjectTitle</h2></div>
+        <br />
+        
+        <div>Address: @project.ProjectClient.ClientAddress</div>
+        <div>Client: @project.ProjectClient.FirstName @project.ProjectClient.LastName</div>
+        <div>Cell: @project.ProjectClient.ClientPhoneNumber</div>
+        <br />
+        <div>Status: @project.ProjectStatus</div>
+        <br />
+        <div>Description: @project.ProjectDescription</div>
+        <br />
+        <div>Notes: @project.ProjectNotes</div>
+        <br />
+        <div>Invoices:</div>
+        <div>
+            <button>New Invoice</button>
+        </div>
+        <br />
+        <Virtualize Items="@project.Invoices" Context="s" OverscanCount="5">
+            <div>Title: @s.InvoiceTitle</div>
+            <div>Status: @s.InvoiceStatus</div>
+            <div>Total: $@s.Total</div>
+            <br />
+        </Virtualize>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private ProjectModel project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await projectData.GetPorjectAsync(Id);
+    }
+}
+
