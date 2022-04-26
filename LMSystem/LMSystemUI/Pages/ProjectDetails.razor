@@ -9,10 +9,18 @@
     {
         <div><h2>Title: @project.ProjectTitle</h2></div>
         <br />
-        
-        <div>Address: @project.ProjectClient.ClientAddress</div>
-        <div>Client: @project.ProjectClient.FirstName @project.ProjectClient.LastName</div>
-        <div>Cell: @project.ProjectClient.ClientPhoneNumber</div>
+        @if (project.ProjectClient.Id is null)
+        {
+            <button @onclick="(()=> AddClientToProject(project.Id))">Add Client</button>
+            <br />
+        }
+        else
+        {
+            <h4>Client Information: </h4>
+            <div>Address: @project.ProjectClient.ClientAddress</div>
+            <div>Client: @project.ProjectClient.FirstName @project.ProjectClient.LastName</div>
+            <div>Cell: @project.ProjectClient.ClientPhoneNumber</div>
+        }
         <br />
         <div>Status: @project.ProjectStatus</div>
         <br />
@@ -42,6 +50,11 @@
     protected override async Task OnInitializedAsync()
     {
         project = await projectData.GetPorjectAsync(Id);
+    }
+
+    private void AddClientToProject(string id)
+    {
+        navManager.NavigateTo($"/addclienttoproject/{id}");
     }
 }
 

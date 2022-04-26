@@ -1,8 +1,75 @@
 ﻿@page "/new_project"
 
+@using LMSystemUI.Models
 @inject IMongoProjectData projectData
+@inject NavigationManager navManager
+@inject IMongoUserData userData
+
+<h3>Create New Project:</h3>
+<br />
+<div>
+    <div>
+        <div>
+            <EditForm Model="project" OnValidSubmit="CreateNewProject">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div>
+                    <label for="project-title-text">
+                        Title: <InputText id="project-title-text" @bind-Value="project.ProjectTitle" />
+                    </label>
+                </div>
+                <div>
+                    <label for="project-desription-text">
+                        Description: <InputTextArea id="project-desription-text" @bind-Value="project.ProjectDescription" />
+                    </label>
+                </div>
+                <div>
+                    <label for="project-notes-text">
+                        Notes: <InputTextArea id="project-notes-text" @bind-Value="project.ProjectNotes" />
+                    </label>
+                </div>
+                <div>
+                    <label for="project-status-text">
+                        Status: <InputText id="project-status-text" @bind-Value="project.ProjectStatus" />
+                    </label>
+                </div>
+                <br />
+                <div>
+                    <button type="submit">Create New Project</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 @code {
-     
+    private CreateProjectModel project = new();
+    private ProjectModel createdProject = new();
+    private UserModel currentUser = new();
+
+    private async Task CreateNewProject()
+    {
+        ProjectModel s = new();
+
+        //TODO: Replace with User lookup once login implemented
+        currentUser = await userData.GeUserAsync("6261c24911695f79f40683c3");
+
+        s.ProjectTitle = project.ProjectTitle;
+        s.ProjectDescription = project.ProjectDescription;
+        s.ProjectNotes = project.ProjectNotes;
+        s.ProjectClient = new();
+        s.Invoices = new();
+        s.CreatedBy = currentUser;
+        s.ProjectStatus = project.ProjectStatus;
+
+        await projectData.CreateProject(s);
+        project = new();
+        ClosePage();
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/projects");
+    }
 }
 

@@ -13,7 +13,7 @@
 </div>
 <br />
 <div>
-    <button>New Project</button>
+    <button @onclick="(() => CreateProject())">New Project</button>
 </div>
 <br />
 <div>
@@ -100,6 +100,11 @@
     private void OpenClientDetails(ClientModel client)
     {
         navManager.NavigateTo($"Client/{client.Id}");
+    }
+
+    private void CreateProject()
+    {
+        navManager.NavigateTo("/new_project");
     }
 }
 

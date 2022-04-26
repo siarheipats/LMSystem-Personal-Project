@@ -17,17 +17,8 @@ namespace LmSystemLibrary.DataAccess
 
         public async Task<List<ProjectModel>> GetProjectsAsync()
         {
-            var output = _cache.Get<List<ProjectModel>>(cacheName);
-
-            if (output is null)
-            {
-                var results = await _projects.FindAsync(_ => true);
-                output = results.ToList();
-
-                _cache.Set(cacheName, output, TimeSpan.FromDays(1));
-            }
-
-            return output;
+            var results = await _projects.FindAsync(_ => true);
+            return results.ToList();
         }
 
         public async Task<ProjectModel> GetPorjectAsync(string id)
@@ -47,7 +38,7 @@ namespace LmSystemLibrary.DataAccess
             return _projects.InsertOneAsync(project);
         }
 
-        public Task UpdateClient(ProjectModel project)
+        public Task UpdateProject(ProjectModel project)
         {
             var filter = Builders<ProjectModel>.Filter.Eq("Id", project.Id);
             return _projects.ReplaceOneAsync(filter, project, new ReplaceOptions { IsUpsert = true });

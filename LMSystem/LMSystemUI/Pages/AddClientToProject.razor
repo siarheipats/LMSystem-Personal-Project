@@ -1,0 +1,93 @@
+﻿@page "/addclienttoproject/{id}"
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IMongoProjectData projectData
+@inject IMongoClientData clientData
+@inject NavigationManager navManager
+@inject ProtectedSessionStorage sessionStorage
+@inject IJSRuntime JsRuntime
+
+<h3>Add Client for @project.ProjectTitle:</h3>
+<br />
+<button @onclick="(() => ClosePage())">Close</button>
+<br />
+<br />
+<div>
+    <h4>Select Client To Add:</h4>
+    <br />
+    <div>
+        Search:
+        <input type="text" placeholder="Search"
+               aria-label="Search box"
+               @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    </div>
+    <br />
+    <div>
+        @if (clients is not null)
+        {
+            <Virtualize Items="@clients" Context="s" OverscanCount="10">
+                  <div>Name: @s.FirstName @s.LastName</div>
+                  <div>Address: @s.ClientAddress</div>
+                  <div>Phone: @s.ClientPhoneNumber</div>
+                  <div>
+                      <button @onclick="(() => AddClient(s))">Select</button>
+                  </div>
+            </Virtualize>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private ProjectModel project = new();
+    private List<ClientModel> clients = new();
+    private string searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await projectData.GetPorjectAsync(Id);
+        clients = await clientData.GetClientsAsync();
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo($"/project/{Id}");
+    }
+
+    private async Task AddClient(ClientModel client)
+    {
+        clients = new();
+        project.ProjectClient = client;
+        await projectData.UpdateProject(project);
+        ClosePage();
+    }
+
+    private async Task LoadFilterState()
+    {
+        searchText = "";
+
+    }
+
+    private async Task FilterClients()
+    {
+        var output = await clientData.GetClientsAsync();
+        if (string.IsNullOrWhiteSpace(searchText) == false)
+        {
+            output = output.Where(s => s.FirstName.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.LastName.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientPhoneNumber.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientEMail.Contains(searchText, StringComparison.InvariantCultureIgnoreCase) ||
+                s.ClientAddress.Contains(searchText, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        }
+        clients = output;
+
+    }
+
+    private async Task OnSearchInput(string searchInput)
+    {
+        searchText = searchInput;
+        await FilterClients();
+    }
+}
+
