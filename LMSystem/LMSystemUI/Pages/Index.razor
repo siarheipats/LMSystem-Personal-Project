@@ -7,38 +7,33 @@
 @inject IMongoClientData clientData
 @inject IMongoUserData userData
 
-<h1>Home</h1>
-<br />
-<h3>You have 0 notifications.</h3>
-<br />
-<div>Search: <input type="text" placeholder="Search"
-       aria-label="Search box"
-       @oninput="((txt) => OnSearchInput((string)txt.Value))" /></div>
-<br />
-<div>
-     <h3>Current Projects:</h3>
+<h1 class="page-heading text-uppercase mb-4">Home</h1>
+<div class="notification-bar">
+    <h5>You have 0 notifications.</h5>
 </div>
-<br />
-<div>
-    <div>Order By:   <button @onclick="(() => OrderByNew(true))">New</button>   <button @onclick="(() => OrderByNew(false))">Alphabetical Order</button> </div>
-</div>
-<br />
-<div>
+<div class="description-and-search-bar">
+    <h2 class="page-description mb-2">Current Projects:</h2>
     <div>
-        @if(projects is not null)
-            {
-                <Virtualize Items="@projects" Context="s" OverscanCount="5">
-                    <form>
-                        <fieldset>
-                            <div @onclick="(() => OpenDetails(s))">Title: @s.ProjectTitle</div>
-                            <div @onclick="(() => OpenClientDetails(s.ProjectClient))">
-                                Client Name: @s.ProjectClient.FirstName @s.ProjectClient.LastName</div>
-                            <div>Status: @s.ProjectStatus</div>
-                        </fieldset>
-                    </form>
-                    <br />
-                </Virtualize>
-            }
+        <input size="50" type="text" placeholder="Search Current Projects"
+               aria-label="Search box"
+               @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    </div>
+</div>
+
+<div class="result">
+    <div>
+        @if (projects is not null)
+        {
+            <Virtualize Items="@projects" Context="s" OverscanCount="5">
+                <form class="result-card">
+                    <fieldset>
+                        <div @onclick="(() => OpenDetails(s))">Title: <a class="card-link">@s.ProjectTitle</a></div>
+                        <div @onclick="(() => OpenClientDetails(s.ProjectClient))">Client Name: <a class="card-link">@s.ProjectClient.FirstName @s.ProjectClient.LastName</a></div>
+                        <div>Status: @s.ProjectStatus</div>
+                    </fieldset>
+                </form>
+            </Virtualize>
+        }
     </div>
 </div>
 

@@ -3,89 +3,96 @@
 @inject IMongoClientData clientData
 @inject NavigationManager navManager
 
-<h3>Client Details:</h3>
-<br />
-@if (client is not null)
-{
-    @if (currentFirstName == client.Id || currentLastName == client.Id)
+<h2 class="page-heading">Client Details:</h2>
+<div class="element-details">
+    @if (client is not null)
     {
-        <EditForm Model="@editedFirstName">
-            <InputText @bind-Value="editedFirstName" />
-        </EditForm>
-        <EditForm Model="@editedLastName" OnSubmit="(() => SaveName(client))">
-            <InputText @bind-Value="editedLastName" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentFirstName = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
+
+        @if (currentFirstName == client.Id || currentLastName == client.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedFirstName">
+                First Name: <InputText @bind-Value="editedFirstName" />
+            </EditForm>
+            <EditForm class="edit-element-details" Model="@editedLastName" OnSubmit="(() => SaveName(client))">
+                Last Name: <InputText @bind-Value="editedLastName" />
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentFirstName = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Name: @client.FirstName @client.LastName    <span class="oi oi-pencil" @onclick="(() => EditName(client))" />
+            </div>
+        }
+        <br />
+        @if (currentAddress == client.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedAddress" OnSubmit="(() => SaveAddress(client))">
+                Address: <InputText size="75" @bind-Value="editedAddress" />
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentAddress = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Address: @client.ClientAddress    <span class="oi oi-pencil" @onclick="(() => EditAddress(client))" />
+            </div>
+        }
+        <br />
+        @if (currentPhone == client.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedPhone" OnSubmit="(() => SavePhoneNumber(client))">
+                Phone: <InputText @bind-Value="editedPhone" />
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentPhone = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Phone: @client.ClientPhoneNumber <span class="oi oi-pencil" @onclick="(() => EditPhoneNumber(client))" />
+            </div>
+        }
+        <br />
+        @if (currentEmail == client.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedEmail" OnSubmit="(() => SaveEmail(client))">
+                Email: <InputText @bind-Value="editedEmail" />
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentEmail = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Email: @client.ClientEMail <span class="oi oi-pencil" @onclick="(() => EditEmail(client))" />
+            </div>
+        }
     }
-    else
-    {
-        <div>
-            Name: @client.FirstName @client.LastName <span class="oi oi-pencil" @onclick="(() => EditName(client))" />
-        </div>
-    }
-    <br />
-    @if(currentAddress == client.Id)
-     {
-        <EditForm Model="@editedAddress" OnSubmit="(() => SaveAddress(client))">
-            <InputTextArea @bind-Value="editedAddress" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentAddress = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-     }
-    else
-    {
-        <div>
-            Address: @client.ClientAddress <span class="oi oi-pencil" @onclick="(() => EditAddress(client))" />
-        </div>
-    }
-    <br />
-    @if(currentPhone == client.Id)
-     {
-        <EditForm Model="@editedPhone" OnSubmit="(() => SavePhoneNumber(client))">
-            <InputTextArea @bind-Value="editedPhone" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentPhone = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-     }
-    else
-    {
-        <div>
-            Phone: @client.ClientPhoneNumber <span class="oi oi-pencil" @onclick="(() => EditPhoneNumber(client))" />
-        </div>
-    }
-    <br />
-    @if(currentEmail == client.Id)
-     {
-        <EditForm Model="@editedEmail" OnSubmit="(() => SaveEmail(client))">
-            <InputTextArea @bind-Value="editedEmail" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentEmail = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-     }
-    else
-    {
-        <div>
-            Email: @client.ClientEMail <span class="oi oi-pencil" @onclick="(() => EditEmail(client))" />
-        </div>
-    }
-}
+</div>
+
 
 @code {
     [Parameter]

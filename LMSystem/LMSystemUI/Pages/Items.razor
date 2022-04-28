@@ -5,40 +5,35 @@
 @inject ProtectedSessionStorage sessionStorage
 @inject NavigationManager navManager
 
-<h3>All Items:</h3>
-
-<div>
-    Search:
-<input type="text" placeholder="Search"
-       aria-label="Search box"
-       @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+<h1 class="page-heading text-uppercase mb-4">Our Inventory:</h1>
+<div class="description-and-search-bar">
+    <input type="text" size="50" placeholder="Inventory"
+           aria-label="Search box"
+           @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    <div>
+        <button class="new-object-button" @onclick="CreateNewItem">Create New Item</button>
+    </div>
 </div>
-<br />
-<div>
-    <button @onclick="CreateNewItem">New Item</button>
-</div>
-<br />
-<div>
+<div class="result">
     <div>
         @if (items is not null)
         {
             <Virtualize Items="@items" Context="s" OverscanCount="10">
-                <form>
+                <form class="result-card">
                     <fieldset>
-                        <div @onclick="(() => OpenItemDetails(s))">Name: @s.ItemName</div>
+                        <div @onclick="(() => OpenItemDetails(s))">Name: <a class="card-link">@s.ItemName</a></div>
                         <div>Description: @s.ItemDescription</div>
                         <div>Price: $@s.Price/each</div>
                         @if(s.QuantityInStock > 0)
-                {
-                    <div>In Stock: @s.QuantityInStock</div>
-                }
+                         {
+                            <div>In Stock: @s.QuantityInStock</div>
+                         }
                         @if(s.QuantityInStock == 0)
-                {
-                    <div>Not available in the warehouse</div>
-                }
+                         {
+                            <div>Not available in the warehouse</div>
+                         }
                     </fieldset>
                 </form>
-                <br />
             </Virtualize>
         }
     </div>

@@ -6,27 +6,23 @@
 @inject ProtectedSessionStorage sessionStorage
 
 
-<h3>Clients:</h3>
-<br />
-<div>
-    Search:
-    <input type="text" placeholder="Search"
+<h1 class="page-heading text-uppercase mb-4">Clients:</h1>
+<div class="description-and-search-bar">
+    <input type="text" placeholder="Search Clients" size="50"
            aria-label="Search box"
            @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    <div>
+        <button class="new-object-button" @onclick="CreateNewItem">Create New Client</button>
+    </div>
 </div>
-<br />
-<div>
-    <button @onclick="CreateNewItem">Create New Client</button>
-</div>
-<br />
-<div>
+<div class="result"> 
     <div>
         @if(clients is not null)
             {
                 <Virtualize Items="@clients" Context="s" OverscanCount="15">
-                    <form>
+                    <form class="result-card">
                         <fieldset>
-                            <div @onclick="(() => OpenClientDetails(s))">Name @s.LastName, @s.FirstName</div>
+                            <div @onclick="(() => OpenClientDetails(s))">Name: <a class="card-link">@s.LastName, @s.FirstName</a></div>
                             <div>Cell: @s.ClientPhoneNumber</div>
                         </fieldset>
                     </form>

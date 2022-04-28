@@ -5,32 +5,28 @@
 @inject ProtectedSessionStorage sessionStorage
 @inject NavigationManager navManager
 
-<h3>Invoices:</h3>
+<h1 class="page-heading text-uppercase mb-4">Invoices:</h1>
 
-<div>
-    Search:
-    <input type="text" placeholder="Search"
+<div class="description-and-search-bar">
+    <input type="text" size="50" placeholder="Search All Invoices"
            aria-label="Search box"
            @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    <div>
+        <button class="new-object-button" @onclick="CreateNewInvocie">Create New Invoice</button>
+    </div>
 </div>
-<br />
-<div>
-    <button @onclick="CreateNewInvocie">New Invoice</button>
-</div>
-<br />
-<div>
+<div class="result">
     <div>
         @if(invoices is not null)
          {
             <Virtualize Items="invoices" Context="s" OverscanCount="10">
-                <form>
+                <form class="result-card">
                     <fieldset>
-                        <div @onclick="(() => OpenInvoiceDetails(s))">Title: @s.InvoiceTitle</div>
+                        <div @onclick="(() => OpenInvoiceDetails(s))">Title: <a class="card-link">@s.InvoiceTitle</a></div>
                         <div>Invoice Number: @s.InvoiceNumber</div>
                         <div>Status: @s.InvoiceStatus</div>
                     </fieldset>
                 </form>
-                <br />
             </Virtualize>
          }    
     </div>
