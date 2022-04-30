@@ -6,26 +6,22 @@
 @inject NavigationManager navManager
 @inject ProtectedSessionStorage sessionStorage
 
-<h3>Add items to @invoice.InvoiceTitle:</h3>
-<br />
-<button @onclick="(() => ClosePage())">Close</button>
-<br />
+<h1 class="page-heading text-uppercase mb-4">Add items to @invoice.InvoiceTitle:</h1>
+
+<button @onclick="(() => ClosePage())">Close Items Page</button>
 <br />
 <div>
-    <h4>Select Items To Add</h4>
-    <br />
-    <div>
-        Search:
-        <input type="text" placeholder="Search"
+    <h4>Select Items To Add:</h4>
+    <div class="description-and-search-bar">
+        <input type="text" placeholder="Search for the Items To Add"
                aria-label="Search box"
                @oninput="((txt) => OnSearchInput((string)txt.Value))" />
     </div>
-    <br/>
-    <div>
+    <div class="result">
         @if (items is not null)
         {
             <Virtualize Items="@items" Context="s" OverscanCount="10">
-                <form>
+                <form class="result-card">
                     <fieldset>
                         <div>Name: @s.ItemName</div>
                         <div>Description: @s.ItemDescription</div>
@@ -38,10 +34,9 @@
                         {
                             <div>Not available in the warehouse</div>
                         }
-                        <button @onclick="(() => AddItem(s))">Add Item</button>
+                        <button class="new-object-button" @onclick="(() => AddItem(s))">Add Item</button>
                     </fieldset>
                 </form>
-                <br />
             </Virtualize>
         }
     </div>

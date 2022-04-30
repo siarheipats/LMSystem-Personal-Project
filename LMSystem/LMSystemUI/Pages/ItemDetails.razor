@@ -2,88 +2,95 @@
 
 @inject IMongoItemData itemData
 
-<h3>Item Details:</h3>
-<br />
-@if (item is not null)
-{
-    @if (currentEditingName == item.Id)
+<h2 class="page-heading">Item Details:</h2>
+<div class="element-details">
+    @if (item is not null)
     {
-        <EditForm Model="@editedName" OnSubmit="(() => SaveName(item))">
-            <InputText @bind-Value="editedName" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentEditingName = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-    }
-    else
-    {
-        <div>
-            Name: @item.ItemName <span class="oi oi-pencil" @onclick="(() => EditName(item))" />
-        </div>
-    }
-    <br />
-    @if (currentEditingDescription == item.Id)
-    {
-        <EditForm Model="@editedDescription" OnSubmit="(() => SaveDescription(item))">
-            <InputTextArea @bind-Value="editedDescription" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentEditingDescription = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-    }
-    else
-    {
-        <div>
-            Description: <br /> @item.ItemDescription <span class="oi oi-pencil" @onclick="(() => EditDescription(item))" />
-        </div>
-
-    }
-    <br />
-    @if (currentEditingPrice == item.Id)
-    {
-        <EditForm Model="@editedPrice" OnSubmit="(() => SavePrice(item))">
-            <InputTextArea @bind-Value="editedPrice" />
-            <button type="submit">
-                <span class="oi oi-check"></span>
-            </button>
-            <button @onclick="(() => currentEditingPrice = String.Empty)">
-                <span class="oi oi-x"></span>
-            </button>
-        </EditForm>
-    }
-    else
-    {
-        <div>
-            Price: @item.Price <span class="oi oi-pencil" @onclick="(() => EditPrice(item))" />
-        </div>
-    }
-    <br />
-    @if (currentQuantityInStock == item.Id)
-    {
-            <EditForm Model="@editedQuantityInStock" OnSubmit="(() => SaveQuantityInStock(item))">
-                <InputNumber @bind-Value="editedQuantityInStock"/>
-                <button type="submit">
+        @if (currentEditingName == item.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedName" OnSubmit="(() => SaveName(item))">
+                Name: <InputText @bind-Value="editedName" size="75" />
+                <br/>
+                <button class="edit-element-button" type="submit">
                     <span class="oi oi-check"></span>
                 </button>
-                <button @onclick="(() => currentQuantityInStock = String.Empty)">
+                <button class="edit-element-button" @onclick="(() => currentEditingName = String.Empty)">
                     <span class="oi oi-x"></span>
                 </button>
             </EditForm>
-    }
-    else
-    {
-        <div>
-            Quantity in Stock: @item.QuantityInStock <span class="oi oi-pencil" @onclick="(() => EditQuantityInStock(item))" />
-        </div>
-    }
+        }
+        else
+        {
+            <div>
+                Name: @item.ItemName <span class="oi oi-pencil" @onclick="(() => EditName(item))" />
+            </div>
+        }
+        <br />
+        @if (currentEditingDescription == item.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedDescription" OnSubmit="(() => SaveDescription(item))">
+                Description: <br/>
+                <InputTextArea @bind-Value="editedDescription" rows="5" cols="75"/>
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentEditingDescription = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Description: <br /> @item.ItemDescription <span class="oi oi-pencil" @onclick="(() => EditDescription(item))" />
+            </div>
 
-}
+        }
+        <br />
+        @if (currentEditingPrice == item.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedPrice" OnSubmit="(() => SavePrice(item))">
+                Price: <InputText @bind-Value="editedPrice" size="75"/>
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentEditingPrice = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Price: @item.Price <span class="oi oi-pencil" @onclick="(() => EditPrice(item))" />
+            </div>
+        }
+        <br />
+        @if (currentQuantityInStock == item.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedQuantityInStock" OnSubmit="(() => SaveQuantityInStock(item))">
+                Quantity In Stock: <InputNumber @bind-Value="editedQuantityInStock" size="75" />
+                <br/>
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentQuantityInStock = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                Quantity in Stock: @item.QuantityInStock <span class="oi oi-pencil" @onclick="(() => EditQuantityInStock(item))" />
+            </div>
+        }
+
+    }
+</div>
+
 
 @code {
     [Parameter]

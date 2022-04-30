@@ -16,6 +16,10 @@ h1, h2, h3, h4, h5 {
     padding-top: 1rem;
 }
 
+.details-heading {
+    color: #282c34;
+}
+
 h1:focus {
     outline: none;
 }
@@ -89,6 +93,22 @@ body {
 
 .edit-element-button {
     margin-top: 10px;
+}
+
+.remove-item-button {
+    margin: 5px;
+}
+
+.invoice-items-table {
+    width: 50%;
+}
+
+tr, td, th {
+    padding: 7px;
+}
+
+.table-button {
+    text-align: center;
 }
 
 a, .btn-link {

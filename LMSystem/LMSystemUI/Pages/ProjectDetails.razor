@@ -4,48 +4,145 @@
 @inject NavigationManager navManager
 @inject IMongoInvoiceData invoiceData
 
-<div>
+
+<h1 class="page-heading text-uppercase mb-4">Project Details</h1>
+
+<div class="element-details">
     @if (project is not null)
     {
-        <div><h2>Title: @project.ProjectTitle</h2></div>
-        <br />
-        @if (project.ProjectClient.Id is null)
+        @if (currentProjectTitle == project.Id)
         {
-            <button @onclick="(()=> AddClientToProject(project.Id))">Add Client</button>
-            <br />
+            <EditForm class="edit-element-details" Model="@editedProjectTitle" OnSubmit="(() => SaveTitle(project))">
+                New Project Title: <InputText size="100" @bind-Value="editedProjectTitle" />
+                <br />
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentProjectTitle = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
         }
         else
         {
-            <h4>Client Information: </h4>
+            <h2 class="details-heading">Title: @project.ProjectTitle</h2>
+            <div><a @onclick="(() => EditTitle(project))" class="card-link" font-size="12">Edit Project Title</a></div>
+        }
+
+        @if (project.ProjectClient.Id is null)
+        {
+            <button @onclick="(()=> AddClientToProject(project.Id))">Add Client</button>
+        }
+        else
+        {
+            <h4 class="details-heading">Client Information: </h4>
             <div>Address: @project.ProjectClient.ClientAddress</div>
             <div>Client: @project.ProjectClient.FirstName @project.ProjectClient.LastName</div>
             <div>Cell: @project.ProjectClient.ClientPhoneNumber</div>
         }
         <br />
-        <div>Status: @project.ProjectStatus</div>
+        @if (currentProjectStatus == project.Id)
+        {
+            <EditForm class="edit-element-template" Model="@editedProjectStatus" OnSubmit="(() => SaveStatus(project))">
+                Project Status: <InputText @bind-Value="editedProjectStatus" />
+                <br />
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentProjectStatus = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>Status: @project.ProjectStatus <span class="oi oi-pencil" @onclick="(() => EditStatus(project))" /></div>
+        }
         <br />
-        <div>Description: @project.ProjectDescription</div>
+        @if (currentProjectDescription == project.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedProjectDescription" OnSubmit="(() => SaveDescription(project))">
+                Description: <br />
+                <InputTextArea @bind-Value="editedProjectDescription" rows="5" cols="75" />
+                <br />
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentProjectDescription = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>Description: @project.ProjectDescription <span class="oi oi-pencil" @onclick="(() => EditDescription(project))" /></div>
+        }
         <br />
-        <div>Notes: @project.ProjectNotes</div>
+        @if (currentProjectNotes == project.Id)
+        {
+            <EditForm class="edit-element-details" Model="@editedProjectNotes" OnSubmit="(() => SaveNotes(project))">
+                Notes: <br />
+                <InputTextArea @bind-Value="editedProjectNotes" rows="5" cols="75" />
+                <br />
+                <button class="edit-element-button" type="submit">
+                    <span class="oi oi-check"></span>
+                </button>
+                <button class="edit-element-button" @onclick="(() => currentProjectNotes = String.Empty)">
+                    <span class="oi oi-x"></span>
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div>Notes: @project.ProjectNotes <span class="oi oi-pencil" @onclick="(() => EditNotes(project))" /></div>
+        }
         <br />
-        <div>Invoices:</div>
+        <div><h5 class="details-heading">Invoices:</h5></div>
         <div>
-            <button>New Invoice</button>
+            <button>Add Existing Invoice</button>
+            <button>Create New Invoice</button>
         </div>
         <br />
-        <Virtualize Items="@project.Invoices" Context="s" OverscanCount="5">
-            <div>Title: @s.InvoiceTitle</div>
-            <div>Status: @s.InvoiceStatus</div>
-            <div>Total: $@s.Total</div>
-            <br />
-        </Virtualize>
+        <table class="invoice-items-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Invoice Status</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <Virtualize Items="@project.Invoices" Context="s" OverscanCount="5">
+                    <tr>
+                        <td>@s.InvoiceTitle</td>
+                        <td>@s.InvoiceStatus</td>
+                        <td>$@s.Total</td>
+                        <td class="table-button"><button class="remove-item-button">Remove</button></td>
+                    </tr>
+                </Virtualize>
+            </tbody>
+        </table>
     }
 </div>
+
+
 
 @code {
     [Parameter]
     public string Id { get; set; }
     private ProjectModel project;
+
+    private ProjectModel editingProjectModel;
+
+    private string currentProjectTitle = "";
+    private string editedProjectTitle = "";
+    private string currentProjectStatus = "";
+    private string editedProjectStatus = "";
+    private string currentProjectDescription = "";
+    private string editedProjectDescription = "";
+    private string currentProjectNotes = "";
+    private string editedProjectNotes = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,6 +152,78 @@
     private void AddClientToProject(string id)
     {
         navManager.NavigateTo($"/addclienttoproject/{id}");
+    }
+
+    private void EditTitle(ProjectModel project)
+    {
+        editingProjectModel = project;
+        editedProjectTitle = project.ProjectTitle;
+        currentProjectTitle = project.Id;
+
+        currentProjectStatus = "";
+        currentProjectDescription = "";
+        currentProjectNotes = "";
+    }
+
+    private async Task SaveTitle(ProjectModel project)
+    {
+        currentProjectTitle = String.Empty;
+        project.ProjectTitle = editedProjectTitle;
+        await projectData.UpdateProject(project);
+    }
+
+    private void EditStatus(ProjectModel project)
+    {
+        editingProjectModel = project;
+        editedProjectStatus = project.ProjectStatus;
+        currentProjectStatus = project.Id;
+
+        currentProjectTitle = "";
+        currentProjectDescription = "";
+        currentProjectNotes = "";
+    }
+
+    private async Task SaveStatus(ProjectModel project)
+    {
+        currentProjectStatus = String.Empty;
+        project.ProjectStatus = editedProjectStatus;
+        await projectData.UpdateProject(project);
+    }
+
+    private void EditDescription(ProjectModel project)
+    {
+        editingProjectModel = project;
+        editedProjectDescription = project.ProjectDescription;
+        currentProjectDescription = project.Id;
+
+        currentProjectTitle = "";
+        currentProjectStatus = "";
+        currentProjectNotes = "";
+    }
+
+    private async Task SaveDescription(ProjectModel project)
+    {
+        currentProjectDescription = String.Empty;
+        project.ProjectDescription = editedProjectDescription;
+        await projectData.UpdateProject(project);
+    }
+
+    private void EditNotes(ProjectModel project)
+    {
+        editingProjectModel = project;
+        editedProjectNotes = project.ProjectNotes;
+        currentProjectNotes = project.Id;
+
+        currentProjectTitle = "";
+        currentProjectStatus = "";
+        currentProjectDescription = "";
+    }
+
+    private async Task SaveNotes(ProjectModel project)
+    {
+        currentProjectNotes = String.Empty;
+        project.ProjectNotes = editedProjectNotes;
+        await projectData.UpdateProject(project);
     }
 }
 

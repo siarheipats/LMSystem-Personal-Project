@@ -7,31 +7,30 @@
 @inject ProtectedSessionStorage sessionStorage
 @inject IJSRuntime JsRuntime
 
-<h3>Add Client for @project.ProjectTitle:</h3>
-<br />
-<button @onclick="(() => ClosePage())">Close</button>
-<br />
+<h1 class="page-heading text-uppercase mb-4">Add Client for @project.ProjectTitle:</h1>
+<button @onclick="(() => ClosePage())">Close Page</button>
 <br />
 <div>
     <h4>Select Client To Add:</h4>
-    <br />
-    <div>
-        Search:
-        <input type="text" placeholder="Search"
+    <div class="description-and-search-bar">
+        <input type="text" placeholder="Search For a Client"
                aria-label="Search box"
                @oninput="((txt) => OnSearchInput((string)txt.Value))" />
     </div>
-    <br />
-    <div>
+    <div class="result">
         @if (clients is not null)
         {
             <Virtualize Items="@clients" Context="s" OverscanCount="10">
-                  <div>Name: @s.FirstName @s.LastName</div>
-                  <div>Address: @s.ClientAddress</div>
-                  <div>Phone: @s.ClientPhoneNumber</div>
-                  <div>
-                      <button @onclick="(() => AddClient(s))">Select</button>
-                  </div>
+                <form class="result-card">
+                    <fieldset>
+                        <div>Name: @s.FirstName @s.LastName</div>
+                        <div>Address: @s.ClientAddress</div>
+                        <div>Phone: @s.ClientPhoneNumber</div>
+                        <div>
+                            <button class="new-object-button" @onclick="(() => AddClient(s))">Add Client</button>
+                        </div>
+                    </fieldset>
+                </form>
             </Virtualize>
         }
     </div>
@@ -60,7 +59,7 @@
         clients = new();
         project.ProjectClient = client;
         await projectData.UpdateProject(project);
-        ClosePage();
+        navManager.NavigateTo($"/project/{Id}");
     }
 
     private async Task LoadFilterState()

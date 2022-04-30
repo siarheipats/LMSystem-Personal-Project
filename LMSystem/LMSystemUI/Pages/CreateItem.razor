@@ -12,26 +12,28 @@
             <EditForm Model="item" OnValidSubmit="CreateNewItem">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
+                <table class="invoice-tems-table">
+                    <tbody>
+                        <tr>
+                            <td>Item Name:</td>
+                            <td><InputText id="item-name-text" @bind-Value="item.ItemName" /></td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td><InputTextArea id="item-description-text" rows="3" cols="21" @bind-Value="item.ItemDescription" /></td>
+                        </tr>
+                        <tr>
+                            <td>Price:</td>
+                            <td><InputText id="item-price-text" @bind-Value="item.Price" /></td>
+                        </tr>
+                        <tr>
+                            <td>Quantity:</td>
+                            <td><InputNumber id="item-quantity-text" @bind-Value="item.QuantityInStock" /></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div>
-                    <label for="item-name-text">Name: </label>
-                    <InputText id="item-name-text" @bind-Value="item.ItemName" />
-                </div>
-                <div>
-                    <label for="item-description-text">Description: </label>
-                    <br />
-                    <InputTextArea id="item-description-text" @bind-Value="item.ItemDescription" />
-                </div>
-                <div>
-                    <label for="item-price-text">Price: </label>
-                    <InputText id="item-price-text" @bind-Value="item.Price" />
-                </div>
-                <div>
-                    <label for="item-quantity-text">Quantity: </label>
-                    <InputNumber id="item-quantity-text" @bind-Value="item.QuantityInStock" />
-                </div>
-                <br />
-                <div>
-                    <button type="submit">Add To Inventory</button>
+                    <button type="submit" class="table-button">Add To Inventory</button>
                 </div>
             </EditForm>
         </div>
