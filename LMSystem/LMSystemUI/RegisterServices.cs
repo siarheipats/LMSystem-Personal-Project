@@ -1,4 +1,6 @@
-﻿namespace LMSystemUI
+﻿using Blazored.Toast;
+
+namespace LMSystemUI
 {
 	public static class RegisterServices
 	{
@@ -14,6 +16,7 @@
 			builder.Services.AddSingleton<IMongoItemData, MongoItemData>();
 			builder.Services.AddSingleton<IMongoProjectData, MongoProjectData>();
 			builder.Services.AddSingleton<IMongoUserData, MongoUserData>();
+			builder.Services.AddBlazoredToast();
 		}
 	}
 }

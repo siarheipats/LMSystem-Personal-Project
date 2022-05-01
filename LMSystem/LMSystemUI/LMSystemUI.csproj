@@ -11,6 +11,7 @@
     <None Remove="Models\" />
     <None Remove="Microsoft.Identity.Web" />
     <None Remove="Microsoft.Identity.Web.UI" />
+    <None Remove="Blazored.Toast" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\" />
@@ -23,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Web" Version="1.24.0" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.24.0" />
+    <PackageReference Include="Blazored.Toast" Version="3.2.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LmSystemLibrary\LmSystemLibrary.csproj">

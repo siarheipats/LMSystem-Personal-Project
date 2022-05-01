@@ -9,6 +9,14 @@ html, body {
     color: #FFFFFF;
 }
 
+.modal-title-2 {
+    color: #282c34;
+}
+
+.modal-mine {
+    color: #282c34;
+}
+
 h1, h2, h3, h4, h5 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
@@ -103,8 +111,12 @@ body {
     width: 50%;
 }
 
+.item-table {
+    width: 100%;
+}
+
 tr, td, th {
-    padding: 7px;
+    padding: 10px;
 }
 
 .table-button {

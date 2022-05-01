@@ -6,6 +6,8 @@
 @inject NavigationManager navManager
 @inject ProtectedSessionStorage sessionStorage
 
+@inject IToastService toastService
+
 <h1 class="page-heading text-uppercase mb-4">Add items to @invoice.InvoiceTitle:</h1>
 
 <button @onclick="(() => ClosePage())">Close Items Page</button>
@@ -17,30 +19,47 @@
                aria-label="Search box"
                @oninput="((txt) => OnSearchInput((string)txt.Value))" />
     </div>
-    <div class="result">
+    <div class="result-card">
         @if (items is not null)
         {
-            <Virtualize Items="@items" Context="s" OverscanCount="10">
-                <form class="result-card">
-                    <fieldset>
-                        <div>Name: @s.ItemName</div>
-                        <div>Description: @s.ItemDescription</div>
-                        <div>Price: $@s.Price/each</div>
-                        @if (s.QuantityInStock > 0)
-                        {
-                            <div>In Stock: @s.QuantityInStock</div>
-                        }
-                        @if (s.QuantityInStock == 0)
-                        {
-                            <div>Not available in the warehouse</div>
-                        }
-                        <button class="new-object-button" @onclick="(() => AddItem(s))">Add Item</button>
-                    </fieldset>
-                </form>
-            </Virtualize>
+        <div class="table">
+            <table class="item-table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Quantity In Stock</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <Virtualize Items="@items" Context="s" OverscanCount="10">
+                        <tr>
+                            <th>@s.ItemName</th>
+                            <th>@s.ItemDescription</th>
+                            <th>@s.Price</th>
+                            @if (s.QuantityInStock > 0)
+                            {
+                                <th>@s.QuantityInStock</th>
+                            }
+                            @if (s.QuantityInStock == 0)
+                            {
+                                <th>Out Of Stock</th>
+                            }
+                            <th>
+                                <button class="btn btn-success" @onclick="@(() => { AddItem(s); toastService.ShowSuccess($"{s.ItemName} was added to {invoice.InvoiceTitle}."); })">Add Item</button>
+                            </th>
+                        </tr>
+
+                    </Virtualize>
+                </tbody>
+            </table>
+        </div>
         }
     </div>
 </div>
+
 @code {
     [Parameter]
     public string Id { get; set; }
@@ -106,8 +125,13 @@
         var total = float.Parse(invoice.Total);
         var new_total = total + float.Parse(item.Price);
         invoice.Total = new_total.ToString();
-        
         await invoiceData.UpdateInvoice(invoice);
+
+    }
+
+    private void ShowToast(ItemModel item)
+    {
+            toastService.ShowSuccess($"{item.ItemName} was succesfully added to {invoice.InvoiceTitle}");
     }
 
 }

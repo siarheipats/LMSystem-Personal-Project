@@ -1,9 +1,10 @@
 ﻿@page "/createitem"
 
-@using LMSystemUI.Models 
+@using LMSystemUI.Models
 
 @inject IMongoItemData itemData
 @inject NavigationManager navManager
+@inject IToastService toastService
 
 <h3>New Item:</h3>
 <div>
@@ -30,11 +31,13 @@
                             <td>Quantity:</td>
                             <td><InputNumber id="item-quantity-text" @bind-Value="item.QuantityInStock" /></td>
                         </tr>
+                        <tr>
+                            <td>   </td>
+                            <td><button type="submit" class="table-button">Add To Inventory</button></td>
+                        </tr>
+
                     </tbody>
                 </table>
-                <div>
-                    <button type="submit" class="table-button">Add To Inventory</button>
-                </div>
             </EditForm>
         </div>
     </div>
@@ -45,6 +48,7 @@
 
     private async Task CreateNewItem()
     {
+        toastService.ShowSuccess($"{item.ItemName} was added to inventory!");
         ItemModel s = new();
         s.ItemName = item.ItemName;
         s.ItemDescription = item.ItemDescription;
