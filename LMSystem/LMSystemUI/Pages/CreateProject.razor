@@ -5,6 +5,8 @@
 @inject NavigationManager navManager
 @inject IMongoUserData userData
 
+@inject IToastService toastService
+
 <h3>Create New Project:</h3>
 <br />
 <div>
@@ -13,30 +15,29 @@
             <EditForm Model="project" OnValidSubmit="CreateNewProject">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <div>
-                    <label for="project-title-text">
-                        Title: <InputText id="project-title-text" @bind-Value="project.ProjectTitle" />
-                    </label>
-                </div>
-                <div>
-                    <label for="project-desription-text">
-                        Description: <InputTextArea id="project-desription-text" @bind-Value="project.ProjectDescription" />
-                    </label>
-                </div>
-                <div>
-                    <label for="project-notes-text">
-                        Notes: <InputTextArea id="project-notes-text" @bind-Value="project.ProjectNotes" />
-                    </label>
-                </div>
-                <div>
-                    <label for="project-status-text">
-                        Status: <InputText id="project-status-text" @bind-Value="project.ProjectStatus" />
-                    </label>
-                </div>
-                <br />
-                <div>
-                    <button type="submit">Create New Project</button>
-                </div>
+                <table class="invoice-items-table">
+                    <tbody>
+                        <tr>
+                            <td>Title:</td>
+                            <td><InputText id="project-title-text" @bind-Value="project.ProjectTitle" /></td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td><InputTextArea id="project-desription-text" rows="3" cols="21" @bind-Value="project.ProjectDescription" /></td>
+                        </tr>
+                        <tr>
+                            <td>Notes:</td>
+                            <td><InputTextArea id="project-notes-text" rows="3" cols="21" @bind-Value="project.ProjectNotes" /></td>
+                        </tr>
+                        <tr>
+                            <td>Status:</td>
+                            <td><InputText id="project-status-text" @bind-Value="project.ProjectStatus" /></td>
+                        </tr>
+                        <tr>
+                            <td><button type="submit">Create New Project</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </EditForm>
         </div>
     </div>
@@ -46,10 +47,12 @@
     private CreateProjectModel project = new();
     private ProjectModel createdProject = new();
     private UserModel currentUser = new();
-
+    
     private async Task CreateNewProject()
     {
         ProjectModel s = new();
+
+        toastService.ShowSuccess($"{project.ProjectTitle} was succesfully created!");
 
         //TODO: Replace with User lookup once login implemented
         currentUser = await userData.GeUserAsync("6261c24911695f79f40683c3");

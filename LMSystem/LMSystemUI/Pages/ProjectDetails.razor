@@ -4,9 +4,10 @@
 @inject NavigationManager navManager
 @inject IMongoInvoiceData invoiceData
 
+@inject IToastService toastService
+
 
 <h1 class="page-heading text-uppercase mb-4">Project Details</h1>
-
 <div class="element-details">
     @if (project is not null)
     {
@@ -16,7 +17,7 @@
                 New Project Title: <InputText size="100" @bind-Value="editedProjectTitle" />
                 <br />
                 <button class="edit-element-button" type="submit">
-                    <span class="oi oi-check"></span>
+                    <span class="oi oi-check" @onclick="@(() => toastService.ShowSuccess("Title was updated!"))"></span>
                 </button>
                 <button class="edit-element-button" @onclick="(() => currentProjectTitle = String.Empty)">
                     <span class="oi oi-x"></span>
@@ -27,7 +28,18 @@
         {
             <h2 class="details-heading">Title: @project.ProjectTitle</h2>
             <div><a @onclick="(() => EditTitle(project))" class="card-link" font-size="12">Edit Project Title</a></div>
+            <div><a @onclick="(() => ShareProject(project))" class="card-link" font-size="12">Share Project</a></div>
         }
+
+        @if (currentProjectLink == project.Id)
+         {
+            <EditForm class="edit-element-details" Model="@editingProjectLink">
+                Share Project with @project.ProjectClient.FirstName @project.ProjectClient.LastName
+                <br/>
+                <InputTextArea @bind-Value="editingProjectLink" rows="5" cols="75" />
+
+            </EditForm>
+         }
 
         @if (project.ProjectClient.Id is null)
         {
@@ -47,7 +59,7 @@
                 Project Status: <InputText @bind-Value="editedProjectStatus" />
                 <br />
                 <button class="edit-element-button" type="submit">
-                    <span class="oi oi-check"></span>
+                    <span class="oi oi-check" @onclick="@(() => toastService.ShowSuccess("Project status was updated!"))"></span>
                 </button>
                 <button class="edit-element-button" @onclick="(() => currentProjectStatus = String.Empty)">
                     <span class="oi oi-x"></span>
@@ -66,7 +78,7 @@
                 <InputTextArea @bind-Value="editedProjectDescription" rows="5" cols="75" />
                 <br />
                 <button class="edit-element-button" type="submit">
-                    <span class="oi oi-check"></span>
+                    <span class="oi oi-check" @onclick="@(() => toastService.ShowSuccess("Description was updated!"))"></span>
                 </button>
                 <button class="edit-element-button" @onclick="(() => currentProjectDescription = String.Empty)">
                     <span class="oi oi-x"></span>
@@ -85,7 +97,7 @@
                 <InputTextArea @bind-Value="editedProjectNotes" rows="5" cols="75" />
                 <br />
                 <button class="edit-element-button" type="submit">
-                    <span class="oi oi-check"></span>
+                    <span class="oi oi-check" @onclick="@(() => toastService.ShowSuccess("Notes were updated!"))"></span>
                 </button>
                 <button class="edit-element-button" @onclick="(() => currentProjectNotes = String.Empty)">
                     <span class="oi oi-x"></span>
@@ -143,6 +155,10 @@
     private string editedProjectDescription = "";
     private string currentProjectNotes = "";
     private string editedProjectNotes = "";
+    private string currentProjectLink = "";
+    private string editingProjectLink = "";
+    private string shareProjectText = "";
+    private string shortURL = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,6 +170,19 @@
         navManager.NavigateTo($"/addclienttoproject/{id}");
     }
 
+    private void ShareProject(ProjectModel project)
+    {
+        GenerateLink(project);
+        editingProjectModel = project;
+        editingProjectLink = $"Hello {project.ProjectClient.FirstName}! You now can access your project and invoices by following this link: {shortURL}";
+        currentProjectLink = project.Id;
+
+        currentProjectTitle = "";
+        currentProjectStatus = "";
+        currentProjectDescription = "";
+        currentProjectNotes = "";
+    }
+
     private void EditTitle(ProjectModel project)
     {
         editingProjectModel = project;
@@ -163,6 +192,7 @@
         currentProjectStatus = "";
         currentProjectDescription = "";
         currentProjectNotes = "";
+        currentProjectLink = "";
     }
 
     private async Task SaveTitle(ProjectModel project)
@@ -181,6 +211,7 @@
         currentProjectTitle = "";
         currentProjectDescription = "";
         currentProjectNotes = "";
+        currentProjectLink = "";
     }
 
     private async Task SaveStatus(ProjectModel project)
@@ -199,6 +230,7 @@
         currentProjectTitle = "";
         currentProjectStatus = "";
         currentProjectNotes = "";
+        currentProjectLink = "";
     }
 
     private async Task SaveDescription(ProjectModel project)
@@ -217,6 +249,7 @@
         currentProjectTitle = "";
         currentProjectStatus = "";
         currentProjectDescription = "";
+        currentProjectLink = "";
     }
 
     private async Task SaveNotes(ProjectModel project)
@@ -224,6 +257,15 @@
         currentProjectNotes = String.Empty;
         project.ProjectNotes = editedProjectNotes;
         await projectData.UpdateProject(project);
+    }
+
+    private void GenerateLink(ProjectModel project)
+    {
+        string fullURL = $"https://localhost:7012/project/{project.Id}";
+        File.WriteAllText(@"/Users/siarheipats/GitHubRepos/LMSystem-Personal-Project/LMSystem/data_xfer.txt", fullURL);
+        Thread.Sleep(500);
+        shortURL = File.ReadAllText(@"/Users/siarheipats/GitHubRepos/LMSystem-Personal-Project/LMSystem/data_xfer.txt");
+        File.WriteAllText(@"/Users/siarheipats/GitHubRepos/LMSystem-Personal-Project/LMSystem/data_xfer.txt", "");
     }
 }
 

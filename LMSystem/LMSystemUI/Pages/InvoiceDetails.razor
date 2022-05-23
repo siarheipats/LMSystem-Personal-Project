@@ -18,6 +18,7 @@
         <div>Total: $@invoice.Total</div>
         <div><h3 class="details-heading">Items:</h3></div>
         <button @onclick="(() => AddItemsToInvoice(invoice.Id))">Add Items</button>
+        <button>Create New Item</button>
         <br />
         @if (invoice.Items is not null)
         {

@@ -23,7 +23,7 @@
         @if (items is not null)
         {
         <div class="table">
-            <table class="item-table">
+            <table class="invoice-items-table-wide">
                 <thead class="table-header">
                     <tr>
                         <th>Name</th>
@@ -36,22 +36,21 @@
                 <tbody>
                     <Virtualize Items="@items" Context="s" OverscanCount="10">
                         <tr>
-                            <th>@s.ItemName</th>
-                            <th>@s.ItemDescription</th>
-                            <th>@s.Price</th>
+                            <td>@s.ItemName</td>
+                            <td>@s.ItemDescription</td>
+                            <td>@s.Price</td>
                             @if (s.QuantityInStock > 0)
                             {
-                                <th>@s.QuantityInStock</th>
+                                <td>@s.QuantityInStock</td>
                             }
                             @if (s.QuantityInStock == 0)
                             {
-                                <th>Out Of Stock</th>
+                                <td>Out Of Stock</td>
                             }
-                            <th>
+                            <td>
                                 <button class="btn btn-success" @onclick="@(() => { AddItem(s); toastService.ShowSuccess($"{s.ItemName} was added to {invoice.InvoiceTitle}."); })">Add Item</button>
-                            </th>
+                            </td>
                         </tr>
-
                     </Virtualize>
                 </tbody>
             </table>
