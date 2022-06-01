@@ -1,43 +1,49 @@
-﻿@page "/invoices"
+﻿@page "/addinvoicetoproject/{id}"
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IMongoProjectData projectData
 @inject IMongoInvoiceData invoiceData
-@inject ProtectedSessionStorage sessionStorage
 @inject NavigationManager navManager
+@inject IToastService toastService
 
-<h1 class="page-heading text-uppercase mb-4">Invoices:</h1>
+<h1 class="page-heading text-uppercase mb-4">Add Invoice for @project.ProjectTitle:</h1>
 
+<button class="btn btn-warning" @onclick="(() => ClosePage())">Close Page</button>
+<br />
 <div class="description-and-search-bar">
     <input type="text" size="50" placeholder="Search All Invoices"
            aria-label="Search box"
            @oninput="((txt) => OnSearchInput((string)txt.Value))" />
-    <div>
-        <button class="btn btn-primary" @onclick="CreateNewInvocie">Create New Invoice</button>
-    </div>
 </div>
 <div class="result">
     <div>
-        @if(invoices is not null)
-         {
+        @if (invoices is not null)
+        {
             <Virtualize Items="invoices" Context="s" OverscanCount="10">
                 <form class="result-card">
                     <fieldset>
-                        <div @onclick="(() => OpenInvoiceDetails(s))">Title: <a class="card-link">@s.InvoiceTitle</a></div>
+                        <div>Title: @s.InvoiceTitle</div>
                         <div>Invoice Number: @s.InvoiceNumber</div>
                         <div>Status: @s.InvoiceStatus</div>
+                        <div>
+                            <button type="button" class="btn btn-primary" @onclick="@(() => { AddInvoice(s); toastService.ShowSuccess($"{s.InvoiceTitle} was assigned to {project.ProjectTitle}!"); })">Add Invoice</button>
+                        </div>
                     </fieldset>
                 </form>
             </Virtualize>
-         }    
+        }
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
     private List<InvoiceModel> invoices;
+    private ProjectModel project = new();
     private string searchText = "";
 
     protected async override Task OnInitializedAsync()
     {
+        project = await projectData.GetPorjectAsync(Id);
         invoices = await invoiceData.GetAllInvoices();
     }
 
@@ -68,12 +74,6 @@
         }
         invoices = output;
 
-        await SaveFilterState();
-    }
-
-    private async Task SaveFilterState()
-    {
-        await sessionStorage.SetAsync(nameof(searchText), searchText);
     }
 
     private async Task OnSearchInput(string searchInput)
@@ -82,14 +82,16 @@
         await FilterInvoices();
     }
 
-    private void OpenInvoiceDetails(InvoiceModel invoice)
+    private async Task AddInvoice(InvoiceModel invoice)
     {
-        navManager.NavigateTo($"/invoice/{invoice.Id}");
+        project.Invoices.Add(invoice);
+        await projectData.UpdateProject(project);
+        ClosePage();
     }
 
-    private void CreateNewInvocie()
+    private void ClosePage()
     {
-        navManager.NavigateTo("/createinvoice");
+        navManager.NavigateTo($"/project/{Id}");
     }
 }
 

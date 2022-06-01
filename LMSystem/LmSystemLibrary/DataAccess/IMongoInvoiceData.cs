@@ -7,5 +7,6 @@ namespace LmSystemLibrary.DataAccess
         Task<List<InvoiceModel>> GetAllInvoices();
         Task<InvoiceModel> GetInvoiceAsync(string id);
         Task UpdateInvoice(InvoiceModel invoice);
+        void DeleteInvoice(InvoiceModel invoice);
     }
 }

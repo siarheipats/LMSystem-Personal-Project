@@ -43,6 +43,12 @@ namespace LmSystemLibrary.DataAccess
             var filter = Builders<ProjectModel>.Filter.Eq("Id", project.Id);
             return _projects.ReplaceOneAsync(filter, project, new ReplaceOptions { IsUpsert = true });
         }
+
+        public void DeleteProject(ProjectModel project)
+        {
+            var filter = Builders<ProjectModel>.Filter.Eq("Id", project.Id);
+            _projects.DeleteOne(filter);
+        }
     }
 }
 

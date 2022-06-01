@@ -36,6 +36,12 @@ namespace LmSystemLibrary.DataAccess
             var filter = Builders<InvoiceModel>.Filter.Eq("Id", invoice.Id);
             return _invoices.ReplaceOneAsync(filter, invoice, new ReplaceOptions { IsUpsert = true });
         }
+
+        public void DeleteInvoice(InvoiceModel invoice)
+        {
+            var filter = Builders<InvoiceModel>.Filter.Eq("Id", invoice.Id);
+            _invoices.DeleteOne(filter);
+        }
     }
 }
 

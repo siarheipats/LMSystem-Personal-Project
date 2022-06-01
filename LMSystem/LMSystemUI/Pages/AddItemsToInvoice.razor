@@ -10,7 +10,7 @@
 
 <h1 class="page-heading text-uppercase mb-4">Add items to @invoice.InvoiceTitle:</h1>
 
-<button @onclick="(() => ClosePage())">Close Items Page</button>
+<button class="btn btn-warning" @onclick="(() => ClosePage())">Close Items Page</button>
 <br />
 <div>
     <h4>Select Items To Add:</h4>
@@ -123,7 +123,7 @@
         invoice.Items.Add(item);
         var total = float.Parse(invoice.Total);
         var new_total = total + float.Parse(item.Price);
-        invoice.Total = new_total.ToString();
+        invoice.Total = new_total.ToString("0.00");
         await invoiceData.UpdateInvoice(invoice);
 
     }

@@ -7,5 +7,6 @@ namespace LmSystemLibrary.DataAccess
         Task<ClientModel> GeClientAsync(string id);
         Task<List<ClientModel>> GetClientsAsync();
         Task UpdateClient(ClientModel client);
+        void DeleteClient(ClientModel client);
     }
 }

@@ -10,7 +10,7 @@
 @inject IToastService toastService
 
 <h1 class="page-heading text-uppercase mb-4">Add Client for @project.ProjectTitle:</h1>
-<button @onclick="(() => ClosePage())">Close Page</button>
+<button class="btn btn-warning" @onclick="(() => ClosePage())">Close Page</button>
 <br />
 <div>
     <h4>Select Client To Add:</h4>
@@ -29,7 +29,7 @@
                         <div>Address: @s.ClientAddress</div>
                         <div>Phone: @s.ClientPhoneNumber</div>
                         <div>
-                            <button class="new-object-button" @onclick="@(() => { AddClient(s); toastService.ShowSuccess($"{s.FirstName} {s.LastName} was assigned to {project.ProjectTitle}!"); })">Add Client</button>
+                            <button type="button" class="btn btn-primary" @onclick="@(() => { AddClient(s); toastService.ShowSuccess($"{s.FirstName} {s.LastName} was assigned to {project.ProjectTitle}!"); })">Add Client</button>
                         </div>
                     </fieldset>
                 </form>
@@ -61,7 +61,7 @@
         clients = new();
         project.ProjectClient = client;
         await projectData.UpdateProject(project);
-        navManager.NavigateTo($"/project/{Id}");
+        ClosePage();
     }
 
     private async Task LoadFilterState()

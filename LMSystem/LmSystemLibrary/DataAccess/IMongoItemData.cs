@@ -7,5 +7,6 @@ namespace LmSystemLibrary.DataAccess
         Task<ItemModel> GetItemAsync(string id);
         Task<List<ItemModel>> GetItemsAsync();
         Task UpdateItem(ItemModel item);
+        void DeleteItem(ItemModel item);
     }
 }

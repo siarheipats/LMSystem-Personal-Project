@@ -8,5 +8,6 @@ namespace LmSystemLibrary.DataAccess
         Task<List<ProjectModel>> GetProjectsAsync();
         Task UpdateProject(ProjectModel project);
         Task<List<ProjectModel>> GetCurrentPorjectsAsync();
+        void DeleteProject(ProjectModel project);
     }
 }

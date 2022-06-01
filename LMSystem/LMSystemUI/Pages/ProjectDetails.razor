@@ -5,6 +5,7 @@
 @inject IMongoInvoiceData invoiceData
 
 @inject IToastService toastService
+@inject IJSRuntime JS
 
 
 <h1 class="page-heading text-uppercase mb-4">Project Details</h1>
@@ -27,23 +28,32 @@
         else
         {
             <h2 class="details-heading">Title: @project.ProjectTitle</h2>
-            <div><a @onclick="(() => EditTitle(project))" class="card-link" font-size="12">Edit Project Title</a></div>
-            <div><a @onclick="(() => ShareProject(project))" class="card-link" font-size="12">Share Project</a></div>
+            <button type="button" class="btn btn-info" @onclick="(() => EditTitle(project))">Edit Project Title</button>
+            <button type="button" class="btn btn-info" @onclick="(() => ShareProject(project))">Share Project</button>
+            <button type="button" class="btn btn-danger" ata-toggle="modal" data-target="#exampleModalCenter" @onclick='eventArgs => { ShowModal("exampleModalCenter"); ProjectToRemoveUpdate(project); }'>Delete Project</button>
         }
 
         @if (currentProjectLink == project.Id)
-         {
+        {
             <EditForm class="edit-element-details" Model="@editingProjectLink">
+                <br />
                 Share Project with @project.ProjectClient.FirstName @project.ProjectClient.LastName
-                <br/>
+                <br />
+                <br />
+                Send to: @project.ProjectClient.ClientEMail
+                <br />
+                <br />
                 <InputTextArea @bind-Value="editingProjectLink" rows="5" cols="75" />
-
+                <br />
+                <button type="button" class="btn btn-primary" @onclick="(() => SendEmail())">Send</button>
             </EditForm>
-         }
+        }
 
         @if (project.ProjectClient.Id is null)
         {
-            <button @onclick="(()=> AddClientToProject(project.Id))">Add Client</button>
+            <h4 class="details-heading">Client Information: </h4>
+            <button class="btn btn-info" @onclick="(()=> AddClientToProject(project.Id))">Add Client</button>
+            <br />
         }
         else
         {
@@ -111,8 +121,7 @@
         <br />
         <div><h5 class="details-heading">Invoices:</h5></div>
         <div>
-            <button>Add Existing Invoice</button>
-            <button>Create New Invoice</button>
+            <button class="btn btn-primary" @onclick="(()=> AddExistingInvoice(project.Id))">Add Existing Invoice</button>
         </div>
         <br />
         <table class="invoice-items-table">
@@ -130,7 +139,7 @@
                         <td>@s.InvoiceTitle</td>
                         <td>@s.InvoiceStatus</td>
                         <td>$@s.Total</td>
-                        <td class="table-button"><button class="remove-item-button">Remove</button></td>
+                        <td class="table-button"><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter" @onclick='eventArgs => { ShowModal("exampleModalCenter2"); InvoiceToRemoveUpdate(s); }'>Remove</button></td>
                     </tr>
                 </Virtualize>
             </tbody>
@@ -138,7 +147,47 @@
     }
 </div>
 
+<!-- Modal -->
+<div class="modal fade show" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display:none; background: 00000080;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title-2" color: #282c34 id="exampleModalLongTitle">Warning</h5>
+                <button @onclick='eventArgs => HideModal("exampleModalCenter")' type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-mine">Are you sure you want to delete this project?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick='eventArgs => HideModal("exampleModalCenter")' class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick='eventArgs => { HideModal("exampleModalCenter"); ConfirmRemove(); }'>Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Modal2 -->
+<div class="modal fade show" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="display:none; background: 00000080;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title-2" color: #282c34 id="exampleModalLongTitle">Warning</h5>
+                <button @onclick='eventArgs => HideModal("exampleModalCenter")' type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-mine">Are you sure you want to remove this invoice?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick='eventArgs => HideModal("exampleModalCenter")' class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick='eventArgs => { HideModal("exampleModalCenter"); ConfirmRemoveInvoice(); }'>Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]
@@ -146,6 +195,9 @@
     private ProjectModel project;
 
     private ProjectModel editingProjectModel;
+    private ProjectModel projectToRemove = new();
+    private InvoiceModel invoiceToRemove = new();
+    private IJSObjectReference module;
 
     private string currentProjectTitle = "";
     private string editedProjectTitle = "";
@@ -163,6 +215,51 @@
     protected override async Task OnInitializedAsync()
     {
         project = await projectData.GetPorjectAsync(Id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender == null)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Pages/ProjectDetails.razor.js");
+        }
+    }
+
+    protected async void ShowModal(string elementId)
+    {
+        if (module != null)
+        {
+            await module.InvokeAsync<string>("showModal", elementId);
+        }
+        else
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Pages/ProjectDetails.razor.js");
+            await module.InvokeAsync<string>("showModal", elementId);
+        }
+    }
+
+    private void ProjectToRemoveUpdate(ProjectModel project)
+    {
+        projectToRemove = project;
+    }
+
+    private void ConfirmRemove()
+    {
+        toastService.ShowWarning($"{projectToRemove.ProjectTitle} was deleted!");
+        DeleteProject(projectToRemove);
+    }
+
+    protected async void HideModal(string elementId)
+    {
+        if (module != null)
+        {
+            await module.InvokeAsync<string>("hideModal", elementId);
+        }
+        else
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Pages/ProjectDetails.razor.js");
+            await module.InvokeAsync<string>("hideModal", elementId);
+        }
     }
 
     private void AddClientToProject(string id)
@@ -266,6 +363,36 @@
         Thread.Sleep(500);
         shortURL = File.ReadAllText(@"/Users/siarheipats/GitHubRepos/LMSystem-Personal-Project/LMSystem/data_xfer.txt");
         File.WriteAllText(@"/Users/siarheipats/GitHubRepos/LMSystem-Personal-Project/LMSystem/data_xfer.txt", "");
+    }
+
+    private void DeleteProject(ProjectModel project)
+    {
+        projectData.DeleteProject(project);
+        navManager.NavigateTo("/projects");
+    }
+
+    private void SendEmail()
+    {
+        toastService.ShowSuccess("Email was sent!");
+        currentProjectLink = String.Empty;
+    }
+
+    private void AddExistingInvoice(string id)
+    {
+        navManager.NavigateTo($"/addinvoicetoproject/{id}");
+    }
+
+    private void InvoiceToRemoveUpdate(InvoiceModel invoice)
+    {
+        invoiceToRemove = invoice;
+    }
+
+    private async Task ConfirmRemoveInvoice()
+    {
+        project.Invoices.Remove(invoiceToRemove);
+        toastService.ShowWarning($"{invoiceToRemove.InvoiceTitle} was removed!");
+        await projectData.UpdateProject(project);
+        HideModal("exampleModalCenter2");
     }
 }
 

@@ -37,6 +37,12 @@ namespace LmSystemLibrary.DataAccess
             var filter = Builders<ClientModel>.Filter.Eq("Id", client.Id);
             return _clients.ReplaceOneAsync(filter, client, new ReplaceOptions { IsUpsert = true });
         }
+
+        public void DeleteClient(ClientModel client)
+        {
+            var filter = Builders<ClientModel>.Filter.Eq("Id", client.Id);
+            _clients.DeleteOne(filter);
+        }
     }
 }
 

@@ -1,12 +1,14 @@
-﻿@page "/createitem"
+﻿@page "/createitem/{id}"
 
 @using LMSystemUI.Models
 
 @inject IMongoItemData itemData
+@inject IMongoInvoiceData invoiceData
 @inject NavigationManager navManager
 @inject IToastService toastService
 
-<h3>New Item:</h3>
+
+<h3>New Item for @invoice.InvoiceTitle:</h3>
 <div>
     <div>
         <div>
@@ -33,7 +35,7 @@
                         </tr>
                         <tr>
                             <td>   </td>
-                            <td><button class="btn btn-primary" type="submit">Add To Inventory</button></td>
+                            <td><button class="btn btn-primary" type="submit">Create Item</button></td>
                         </tr>
 
                     </tbody>
@@ -44,7 +46,15 @@
 </div>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+    private InvoiceModel invoice = new();
     private CreateItemModel item = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        invoice = await invoiceData.GetInvoiceAsync(Id);
+    }
 
     private async Task CreateNewItem()
     {
@@ -54,7 +64,8 @@
         s.ItemDescription = item.ItemDescription;
         s.Price = item.Price;
         s.QuantityInStock = item.QuantityInStock;
-
+        invoice.Items.Add(s);
+        await invoiceData.UpdateInvoice(invoice);
         await itemData.CreateItem(s);
         item = new();
         ClosePage();
@@ -62,8 +73,7 @@
 
     private void ClosePage()
     {
-        navManager.NavigateTo("/items");
+        navManager.NavigateTo($"/invoice/{Id}");
     }
 }
-
 

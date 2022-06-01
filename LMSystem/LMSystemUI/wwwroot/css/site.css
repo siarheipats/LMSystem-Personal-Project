@@ -80,8 +80,19 @@ body {
     cursor:grab;
 }
 
-.new-object-button {
-    padding:5px;
+.btn-primary {
+    margin-top: 10px;
+}
+
+.btn-danger {
+    margin-top: 10px;
+}
+
+.btn-info {
+    margin-top: 10px;
+}
+
+.btn-secondary {
     margin-top: 10px;
 }
 
